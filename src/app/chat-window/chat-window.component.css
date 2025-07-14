@@ -1,0 +1,344 @@
+.search-container {
+    display: flex;
+    justify-content: center;
+    height: 40px;
+}
+ 
+.search-field {
+    width: 40%;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border: 1px solid #0000002b;
+    border-right: 0;
+    padding: 0 15px;
+    font-size: 12px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+    font-size: 14px;
+}
+ 
+.search-btn {
+    border: 1px solid black;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+ 
+input::placeholder {
+    opacity: 0.5;
+    color: rgb(151, 150, 150);
+}
+ 
+input:focus {
+    outline: none;
+    border: 1px solid #0000002b;
+}
+ 
+.pointer-cursor {
+    cursor: pointer;
+    color: white;
+    font-weight: 500;
+    background-color: #7ed57ec7;
+    border: 0;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+ 
+.pointer-none {
+    pointer-events: none;
+    cursor: not-allowed;
+    border: 1px solid #0000002b;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+}
+ 
+.clear-search {
+    position: relative;
+    left: 30px;
+}
+ 
+.result {
+    display: flex;
+    flex-direction: row;
+    padding: 20px 20px;
+    justify-content: space-between;
+    height: calc(100vh - 150px);
+}
+ 
+::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-thead>tr>th {
+    font-size: 14px;
+    background: #EC252C;
+    border: 0;
+    color: white;
+}
+ 
+::ng-deep .p-datatable.p-datatable-gridlines:has(.p-datatable-thead):has(.p-datatable-tbody) .p-datatable-tbody>tr>td {
+    font-size: 12px;
+}
+ 
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+ 
+.section {
+    border-radius: 4px;
+}
+ 
+.snippet {
+    margin: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #FF000029;
+    border-radius: 13px;
+    opacity: 1;
+}
+ 
+.summary {
+    border-radius: 4px;
+    margin-top: 20px;
+    font-size: 12px;
+}
+ 
+.link-img {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+ 
+.snippet-section {
+    width: 100%;
+}
+ 
+.summary-section {
+    width: 25%;
+}
+ 
+.loader-pos {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+ 
+/* loader */
+.loader {
+    border: 2px solid;
+    border-color: transparent #E31F26;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 2s linear infinite;
+}
+ 
+.loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 24px solid;
+    border-color: transparent rgba(237, 108, 108, 0.15);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+ 
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+ 
+    100% {
+        transform: rotate(360deg);
+    }
+}
+ 
+::ng-deep .p-dialog .p-dialog-header {
+    padding: 0;
+    background: #DAE0E9;
+}
+ 
+::ng-deep .p-icon {
+    height: 12px;
+}
+ 
+::ng-deep .doc-icon-text .p-tooltip-text {
+    font-size: 10px;
+    font-family: Segoeui-Normal;
+}
+ 
+::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+    padding: 0 10px;
+    font-weight: normal;
+    font-size: 14px;
+    text-decoration: underline;
+}
+ 
+.doc-icons {
+    display: flex;
+    justify-content: center;
+    padding: 0 32px;
+}
+ 
+.word-search {
+    position: absolute;
+    background: white;
+    height: auto;
+    max-height: 140px;
+    overflow-y: auto;
+    z-index: 1;
+    width: 100%;
+    top: 42px;
+    left: 0;
+    cursor: pointer;
+}
+ 
+.word-hint {
+    padding: 10px 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+ 
+.word-hint:hover {
+    background: #f0cece29;
+}
+ 
+.vertical {
+    width: 1px;
+    background-color: #0000005C;
+    margin: 0 10px;
+    align-self: stretch;
+}
+ 
+.horizontal {
+    height: 1px;
+    background-color: #9998AA;
+}
+ 
+.view-summary {
+    width: 170px;
+    height: 30px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #0000005C;
+    border: 1px solid #E5535A;
+    border-radius: 7px;
+    letter-spacing: 0px;
+    color: #E5535A;
+    opacity: 1;
+    float: right;
+    margin: 5px 9px;
+    cursor: pointer;
+}
+ 
+.cancel-btn {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    right: 40px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+}
+ 
+.warning {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 15px;
+    border-radius: 5px;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #FF000029;
+}
+ 
+/* loader */
+.loader-summary {
+    width: 30px;
+    padding: 6px;
+    margin: 25px 0px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #E31F26;
+    --_m:
+        conic-gradient(#0000 10%, #000),
+        linear-gradient(#000 0 0) content-box;
+    -webkit-mask: var(--_m);
+    mask: var(--_m);
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    animation: l3 1s infinite linear;
+}
+ 
+@keyframes l3 {
+    to {
+        transform: rotate(1turn)
+    }
+}
+ 
+.empty-msg {
+    text-align: center;
+}
+ 
+.info-container {
+    display: grid;
+    /* Use CSS Grid */
+    grid-template-columns: auto auto;
+    /* Two columns for label and value */
+    width: 100%;
+    /* Full width */
+    border: 1px solid #ddd;
+    /* Outer border */
+    border-collapse: collapse;
+    /* Collapse borders */
+    margin-top: 20px;
+    /* Space from top */
+}
+ 
+.info-row {
+    display: contents;
+    /* Allow each item to span across columns */
+}
+ 
+.info-label,
+.info-value {
+    padding: 6px;
+    /* Padding inside each cell */
+    border: 1px solid #ddd;
+    /* Border for table-like appearance */
+    background-color: #f9f9f9;
+    /* Light background for better visibility */
+    text-align: left;
+    /* Align text to the left */
+    font-size: 12px;
+    font-weight: 500;
+}
+ 
+.info-label {
+    background-color: #f2f2f2;
+    /* Slightly darker background for labels */
+}
+ 
+ 
+::ng-deep .p-paginator-bottom {
+    display: flex;
+    justify-content: end;
+    font-size: 0.75em;
+}
+ 
+::ng-deep .p-paginator-pages .p-paginator-page,
+.p-paginator-prev,
+.p-paginator-first,
+.p-paginator-next,
+.p-paginator-last {
+    min-width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.75rem;
+}
+ 
+::ng-deep .p-tooltip {
+    font-size: 11px;
+    max-width: 40%;
+}

@@ -1,0 +1,20 @@
+.container-fluid {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
+    padding-bottom: 10px;
+}
+ 
+.hero-logo {
+    position: absolute;
+    left: 0;
+    width: 160px;
+    padding: 5px 0px 0 10px;
+}
+ 
+.logo {
+    margin: 0 auto;
+    width: 175px;
+} 

@@ -1,0 +1,145 @@
+<div class="container">
+    <!-- <div class="search-container">
+        <input type="text" [(ngModel)]="searchQuery" class="search-field" (keyup)="filterWords()"
+            (keyup.enter)="enableSearch || searchQuery?.trim() ? getSearchResult() : ''"
+            (focus)="toggleWordSearch(true)" placeholder="How can I help you?" />
+        <div *ngIf="searchQuery" class="clear-search">
+            <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
+        </div>
+ 
+        <button class="search-btn" [ngClass]="(enableSearch || searchQuery?.trim()) ? 'pointer-cursor' : 'pointer-none'"
+            (click)="getSearchResult()" [disabled]="!(enableSearch || searchQuery?.trim())">Search
+        </button>
+ 
+    </div> -->
+ 
+    <div #resultContainer>
+        <div class="result">
+            <div class="section snippet-section">
+                <div *ngIf="loading;else snippetcontent" class="loader-pos">
+                    <span class="loader"></span>
+                </div>
+                <ng-template #snippetcontent>
+                    <div *ngIf="initialLoad;else tableContent">
+ 
+                    </div>
+                    <ng-template #tableContent>
+                        <p-table [value]="searchResult" [tableStyle]="{ 'min-width': '50rem' }"
+                            styleClass="p-datatable-gridlines"  [paginator]="true" [rows]="6">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width:2%">Sl. No.</th>
+                                    <th style="width:30%">Issue Title</th>
+                                    <th style="width:60%">Issue Description</th>
+                                    <th style="width:8%">Read More</th>
+                                </tr>
+                            </ng-template>
+ 
+                            <ng-template pTemplate="body" let-product let-i="rowIndex">
+                                <tr>
+                                    <td>{{ i + 1 }}</td>
+
+                                    <td class="ellipsis" pTooltip="{{product.issue_title || searchQuery}}" tooltipPosition="top">
+                                        <ng-container *ngIf="product.flag == 'hws' && product.issue_title == '' ; else issueTitle">
+                                            {{searchQuery | titlecase}}
+                                        </ng-container>
+                                   
+                                        <ng-template #issueTitle>
+                                            {{product.issue_title   }}
+                                        </ng-template>
+                                    </td>
+                                    <td class="ellipsis" pTooltip={{product.content}} tooltipPosition="top">{{product.content}}</td>
+                                    <td>
+                                        <ng-container *ngIf="product.flag=='hws'">
+                                            <a [href]="'https://hws.heromotocorp.com/jspui/handle/123456789/'+product.filepath" target="_blank">HWS</a>
+                                        </ng-container>
+ 
+                                        <ng-container *ngIf="product.flag=='pts'">
+                                            <a (click)="showDialog(product)" style="cursor:pointer;">PTS
+                                                WebPage</a>
+                                        </ng-container>
+                                    </td>
+                                </tr>
+                            </ng-template>
+ 
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="4" class="empty-msg">No data available for this search result</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </ng-template>
+                </ng-template>
+ 
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
+    [style]="{ width: '68%' }" [draggable]="false" [resizable]="false" [modal]="true"
+    [closable]="summaryLoading ? false : true">
+ 
+    <div class="info-container">
+        <div class="info-row">
+            <div class="info-label">PTS NO</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Object'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Model Code</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Model Code'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Issue Title</div>
+            <div class="info-value">{{ metaData?.['issue_title'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Issue Description</div>
+            <div class="info-value">{{ metaData?.['issue_description'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Part No</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Part Number'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Part Name</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Part Name'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Event</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Event'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Date of Initiation</div>
+            <div class="info-value">{{ metaData?.['request_date'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Initiator Department</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Initiator Dept'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Severity</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Severity'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Root Cause Description</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Root Cause Description'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Countermesure Details</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Countermeasure Details'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Solver Group</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Solver Group'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Designer Group</div>
+            <div class="info-value">{{ metaData?.['design_group'] }}</div>
+        </div>
+    </div>
+    
+ 
+</p-dialog>
+ 
+<p-toast></p-toast>
