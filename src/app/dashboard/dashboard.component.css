@@ -1,0 +1,37 @@
+.card {
+    float: left;
+    margin: 1rem;
+    border: 0;
+    color: black;
+    background-color: white;
+    flex-basis: 33.333%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: 100px;
+    min-width: 250px;
+    padding: 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  }
+
+.cardBody {
+    margin-top: 0.5rem;
+    font-size: 16px;
+    color: #5b5959;
+    font-weight: bold;
+  }
+.cardHeader {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.knowledge {
+    margin: 2rem;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+}
+

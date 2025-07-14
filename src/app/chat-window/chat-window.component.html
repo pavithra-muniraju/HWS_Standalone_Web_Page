@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container rectangle1">
     <!-- <div class="search-container">
         <input type="text" [(ngModel)]="searchQuery" class="search-field" (keyup)="filterWords()"
             (keyup.enter)="enableSearch || searchQuery?.trim() ? getSearchResult() : ''"
@@ -16,10 +16,11 @@
     <div #resultContainer>
         <div class="result">
             <div class="section snippet-section">
-                <div *ngIf="loading;else snippetcontent" class="loader-pos">
+                <div *ngIf="loading;" class="loader-pos">
                     <span class="loader"></span>
                 </div>
-                <ng-template #snippetcontent>
+                <app-dashboard [list]="searchResult" *ngIf="searchResult.length > 0"></app-dashboard>
+                <!-- <ng-template #snippetcontent>
                     <div *ngIf="initialLoad;else tableContent">
  
                     </div>
@@ -69,7 +70,7 @@
                             </ng-template>
                         </p-table>
                     </ng-template>
-                </ng-template>
+                </ng-template> -->
  
             </div>
         </div>

@@ -342,3 +342,18 @@ input:focus {
     font-size: 11px;
     max-width: 40%;
 }
+
+.rectangle1 {       
+    flex-shrink: 0;
+    background-image: url(/assets/wallpaperflare.com_wallpaper.jpg);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    color: white;
+    height:calc(100vh - 66px) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
