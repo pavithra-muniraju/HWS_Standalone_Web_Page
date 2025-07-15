@@ -13,14 +13,18 @@ import { MessageService } from 'primeng/api';
 import { FooterComponent } from './footer/footer.component';
 import { TableModule } from 'primeng/table';
 import { DashboardComponent } from './dashboard/dashboard.component';
-
+import { SearchResultsComponent } from './search-results/search-results.component';
+import { CardModule } from 'primeng/card';
+import { AppRoutingModule } from './app-routing.module';
+import { CheckboxModule } from 'primeng/checkbox';
 @NgModule({
   declarations: [
     AppComponent,
     ChatWindowComponent,
     HeaderComponent,
     FooterComponent,
-    DashboardComponent
+    DashboardComponent,
+    SearchResultsComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +34,10 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     BrowserAnimationsModule,
     TooltipModule,
     ToastModule,
-    TableModule
+    TableModule,
+    CardModule,
+    CheckboxModule,
+    AppRoutingModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
