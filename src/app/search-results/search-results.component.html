@@ -1,0 +1,35 @@
+<div class="search-layout">
+    <!-- Left Panel (Filters) -->
+    <div class="filter-panel">
+      <h5>Issue Category</h5>
+      <div *ngFor="let filter of issueCategoryFilteredData" class="filter-item">
+        <p-checkbox
+          [(ngModel)]="filter.selected"
+          (onChange)="onFilterChange()"
+          [label]="filter.label + ' (' + filter.count + ')'"
+          [binary]="true">
+        </p-checkbox>
+      </div>
+  
+      <h5 class="mt-4">Initiator Dept</h5>
+      <div *ngFor="let filter of deptFilteredData" class="filter-item">
+        <p-checkbox
+          [(ngModel)]="filter.selected"
+          (onChange)="onFilterChange()"
+          [label]="filter.label + ' (' + filter.count + ')'"
+          [binary]="true">
+        </p-checkbox>
+      </div>
+    <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
+    </div>
+    <!-- Right Panel (Cards) -->
+    <div class="card-panel">
+      <p-card *ngFor="let item of filteredResults" class="custom-card">
+        <ng-template pTemplate="header">
+          <h4>{{ item.issue_title }}</h4>
+        </ng-template>
+        <p>{{ item.issue_description }}</p>
+      </p-card>
+    </div>
+  </div>
+  

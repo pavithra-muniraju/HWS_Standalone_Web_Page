@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -9,7 +9,7 @@ export class DashboardComponent {
   @Input() list:any = [];
 
   uniqueKnowledgeAreas:any = [];
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef,private router: Router,) {}
   
   ngOnInit() {
     console.log(this.list);
@@ -21,5 +21,6 @@ export class DashboardComponent {
 
   getAllUniqueKnowledgeAreaItems(ka:any) {
     console.log(ka)
+    this.router.navigateByUrl('search-results');
   }
 }
