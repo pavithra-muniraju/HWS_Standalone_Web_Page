@@ -1,19 +1,15 @@
 <div>
     <h2 class="knowledge">
-        <i> Knowledge Areas</i>
+        <i>Results for the {{query}} is found in below Knowledge Areas</i>
     </h2>
     
-    <div class="row">
-        
-        <div *ngFor="let item of uniqueKnowledgeAreas;let i = index" >
+    <div class="row">        
+        <div *ngFor="let item of uniqueKnowledgeAreasWithCount;let i = index" >
             <div class="card" (click)="getAllUniqueKnowledgeAreaItems(item)">
-                <div class="cardHeader">{{item}}</div>
-                <div class="cardBody">
-                            
-                    {{i+1}}
-                    
-                </div>
-                
+                <div class="cardHeader">{{item.key}}</div>
+                <div class="cardBody">                            
+                    {{item.value}}                    
+                </div>                
             </div>
         </div>
     </div>
