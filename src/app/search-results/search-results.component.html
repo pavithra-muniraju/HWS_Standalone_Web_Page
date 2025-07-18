@@ -1,8 +1,9 @@
 <div class="search-layout">
-    <!-- Left Panel (Filters) -->
-    <div class="filter-panel">
-      <h5>Issue Category</h5>
-      <div *ngFor="let filter of issueCategoryFilteredData" class="filter-item">
+  <!-- Left Panel (Filters) -->
+  <div class="filter-panel">
+    <div *ngFor="let group of filterGroups" class="filter-group">
+      <h5>{{ group.display }}</h5>
+      <div *ngFor="let filter of group.values" class="filter-item">
         <p-checkbox
           [(ngModel)]="filter.selected"
           (onChange)="onFilterChange()"
@@ -10,26 +11,17 @@
           [binary]="true">
         </p-checkbox>
       </div>
-  
-      <h5 class="mt-4">Initiator Dept</h5>
-      <div *ngFor="let filter of deptFilteredData" class="filter-item">
-        <p-checkbox
-          [(ngModel)]="filter.selected"
-          (onChange)="onFilterChange()"
-          [label]="filter.label + ' (' + filter.count + ')'"
-          [binary]="true">
-        </p-checkbox>
-      </div>
-    <button class="reset-btn" (click)="resetFilters()">Reset Filters</button>
     </div>
-    <!-- Right Panel (Cards) -->
-    <div class="card-panel">
-      <p-card *ngFor="let item of filteredResults" class="custom-card">
-        <ng-template pTemplate="header">
-          <h4>{{ item.issue_title }}</h4>
-        </ng-template>
-        <p>{{ item.issue_description }}</p>
-      </p-card>
+
+    <button class="reset-btn" pButton type="button" label="Reset Filters" (click)="resetFilters()"></button>
+  </div>
+
+  <!-- Right Panel (Cards) -->
+  <div class="card-panel">
+    <div class="result-item" *ngFor="let item of filteredResults">
+      <h4 class="result-title">{{ item.issue_title }}</h4>
+      <p class="result-desc">{{ item.issue_description }}</p>
+      <button class="read-now-btn"(click)="navigateToFile(item.filepath)">Read Now</button>
     </div>
   </div>
-  
+</div>
