@@ -10,7 +10,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 400px;
+    height: calc(100vh - 125px);
     overflow-y: scroll;
   }
   

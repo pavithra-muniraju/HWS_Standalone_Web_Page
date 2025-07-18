@@ -42,5 +42,8 @@ export class DashboardComponent {
       }
       
     });
+    let ptsCount  = this.list.filter((obj:any) => obj.flag == 'pts').length;
+    this.uniqueKnowledgeAreasWithCount.push({ key: 'PTS', value: ptsCount })
+  
   }
 }
