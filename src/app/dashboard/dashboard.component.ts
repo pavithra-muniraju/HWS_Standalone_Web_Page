@@ -24,10 +24,17 @@ export class DashboardComponent {
   }
 
   getUniqueKnowledgeArea(){
-    let uniqueKnowledgeAreasKeys = [...new Set(this.list.map((item:any) => item.design_group))];
+    let uniqueKnowledgeAreasKeys = [...new Set(this.list.map((item:any) => {
+      if(item.flag == 'hws' && item.metadatas.knowledge_areas != undefined ){
+        return item.metadatas.knowledge_areas
+      }
+    }))];
     uniqueKnowledgeAreasKeys.forEach((element:any) => {
-      let count  = this.list.filter((obj:any) => obj.design_group == element).length;
-      this.uniqueKnowledgeAreasWithCount.push({ key: element, value: count })
+      let count  = this.list.filter((obj:any) => obj.metadatas.knowledge_areas == element).length;
+      if(element != undefined) {
+        this.uniqueKnowledgeAreasWithCount.push({ key: element, value: count })
+      }
+      
     });
   }
 }
