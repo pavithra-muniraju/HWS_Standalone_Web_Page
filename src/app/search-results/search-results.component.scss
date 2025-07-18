@@ -7,10 +7,11 @@
   .filter-panel {
     flex: 1;
     min-width: 220px;
-    max-height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 400px;
+    overflow-y: scroll;
   }
   
   // .scrollable-filters {
@@ -32,13 +33,37 @@
   .reset-btn {
     margin-top: 1rem;
     padding: 0.5rem 1rem;
-    background-color: #f44336;
+    background-color:black;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
   }
-  .reset-btn:hover {
-    background-color: #d32f2f;
+  .result-item {
+    background: #f9f9f9;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   }
   
+  .result-title {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .result-desc {
+    font-size: 0.95rem;
+    color: #555;
+  }
+  .read-now-btn {
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 8px;
+  }

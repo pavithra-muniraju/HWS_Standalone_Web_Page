@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { emailIDList } from '../config/approvedEmailID';
 // import { ActivatedRoute, ParamMap } from '@angular/router';
+import { SharedDataService } from '../services/shared-data.service';
  
 @Component({
   selector: 'app-chat-window',
@@ -38,7 +39,7 @@ export class ChatWindowComponent implements OnInit {
   loggedInUserDepartment: string | null = '';
  
   getEmailIDFromHWS: any = '';
-  constructor(private http: HttpClient, private messageService: MessageService,
+  constructor(private http: HttpClient, private messageService: MessageService, private sharedDataService: SharedDataService,
     // private route: ActivatedRoute
   ) {
     this.allowedEmailID = emailIDList
@@ -52,6 +53,7 @@ export class ChatWindowComponent implements OnInit {
     this.searchQuery = sessionStorage.getItem('query');
     this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId');
     //console.log(this.searchQuery)
+    this.sharedDataService.setQuery(this.searchQuery || '');
  
  
     

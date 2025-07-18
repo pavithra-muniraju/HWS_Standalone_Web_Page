@@ -17,6 +17,7 @@ import { SearchResultsComponent } from './search-results/search-results.componen
 import { CardModule } from 'primeng/card';
 import { AppRoutingModule } from './app-routing.module';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ButtonModule } from 'primeng/button';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,8 @@ import { CheckboxModule } from 'primeng/checkbox';
     TableModule,
     CardModule,
     CheckboxModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ButtonModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

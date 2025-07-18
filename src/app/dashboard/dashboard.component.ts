@@ -1,5 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
+import { SharedDataService } from '../services/shared-data.service';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -10,17 +12,21 @@ export class DashboardComponent {
   query:any = '';
 
   uniqueKnowledgeAreasWithCount:any = [];
-  constructor(private cdr: ChangeDetectorRef,private router: Router,) {}
+  constructor(private cdr: ChangeDetectorRef,private router: Router,private sharedDataService: SharedDataService) {}
   
   ngOnInit() {
     this.query = sessionStorage.getItem('query');
     this.cdr.detectChanges();
-    this.getUniqueKnowledgeArea();
+    this.getUniqueKnowledgeArea(); 
   }
-
   getAllUniqueKnowledgeAreaItems(ka:any) {
     console.log(ka)
-    this.router.navigateByUrl('search-results');
+    this.sharedDataService.setData(this.list);
+    localStorage.setItem('design_group', ka.key);
+    this.router.navigate(['/search-results'], {
+      queryParams: { 
+        knowledge_areas: ka.key }
+    });
   }
 
   getUniqueKnowledgeArea(){
