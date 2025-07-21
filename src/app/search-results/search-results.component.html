@@ -1,27 +1,37 @@
 <div class="search-layout">
   <!-- Left Panel (Filters) -->
   <div class="filter-panel">
-    <div *ngFor="let group of filterGroups" class="filter-group">
-      <h5>{{ group.display }}</h5>
-      <div *ngFor="let filter of group.values" class="filter-item">
-        <p-checkbox
-          [(ngModel)]="filter.selected"
-          (onChange)="onFilterChange()"
-          [label]="filter.label + ' (' + filter.count + ')'"
-          [binary]="true">
-        </p-checkbox>
+    <div class="filter-groups">
+      <div *ngFor="let group of filterGroups" class="filter-group">
+        <h5>{{ group.display }}</h5>
+        <div *ngFor="let filter of group.values" class="filter-item">
+          <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
+            [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
+          </p-checkbox>
+        </div>
       </div>
     </div>
-
     <button class="reset-btn" pButton type="button" label="Reset Filters" (click)="resetFilters()"></button>
   </div>
 
   <!-- Right Panel (Cards) -->
   <div class="card-panel">
     <div class="result-item" *ngFor="let item of filteredResults">
-      <h4 class="result-title">{{ item.issue_title }}</h4>
-      <p class="result-desc">{{ item.issue_description }}</p>
-      <button class="read-now-btn"(click)="navigateToFile(item.filepath)">Read Now</button>
+      <div class="result-title-section">
+        <div class="result-title">{{ item.issue_title }}</div>
+        <span *ngIf="item.filename?.endsWith('.xlsx') || item.filename?.endsWith('.xls')"><i
+            class="fa-solid fa-file-excel"></i></span>
+        <span *ngIf="item.filename?.endsWith('.doc') || item.filename?.endsWith('.docx')"><i
+            class="fa-solid fa-file-word"></i></span>
+        <span
+          *ngIf="item.filename?.endsWith('.png') || item.filename?.endsWith('.jpg') || item.filename?.endsWith('.jpeg')"><i
+            class="fa-solid fa-image"></i></span>
+        <span *ngIf="item.filename?.endsWith('.pdf')"><i class="fa-solid fa-file-pdf"></i></span>
+      </div>
+      <div class="result-bottom-row">
+        <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
+        <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
+      </div>
     </div>
   </div>
 </div>
