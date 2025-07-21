@@ -1,5 +1,5 @@
 <div class="container rectangle1">
-    <!-- <div class="search-container">
+    <div class="search-container">
         <input type="text" [(ngModel)]="searchQuery" class="search-field" (keyup)="filterWords()"
             (keyup.enter)="enableSearch || searchQuery?.trim() ? getSearchResult() : ''"
             (focus)="toggleWordSearch(true)" placeholder="How can I help you?" />
@@ -11,7 +11,7 @@
             (click)="getSearchResult()" [disabled]="!(enableSearch || searchQuery?.trim())">Search
         </button>
  
-    </div> -->
+    </div>
  
     <div #resultContainer>
         <div class="result">

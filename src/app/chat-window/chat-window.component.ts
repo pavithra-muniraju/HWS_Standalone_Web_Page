@@ -71,6 +71,7 @@ export class ChatWindowComponent implements OnInit {
     if (this.apiSubscription) {
       this.apiSubscription.unsubscribe();
     }
+    sessionStorage.setItem('query',this.searchQuery);
     this.apiSubscription = this.http.post(apiUrl.searchUrl, {
       query: this.searchQuery,
       max_results: 100
