@@ -13,7 +13,7 @@ export class DashboardComponent {
 
   uniqueKnowledgeAreasWithCount:any = [];
   constructor(private cdr: ChangeDetectorRef,private router: Router,private sharedDataService: SharedDataService) {}
-  
+ 
   ngOnInit() {
     this.query = sessionStorage.getItem('query');
     this.cdr.detectChanges();
@@ -22,7 +22,7 @@ export class DashboardComponent {
   getAllUniqueKnowledgeAreaItems(ka:any) {
     console.log(ka)
     this.sharedDataService.setData(this.list);
-    localStorage.setItem('design_group', ka.key);
+    localStorage.setItem('knowledge_areas', ka.key);
     this.router.navigate(['/search-results'], {
       queryParams: { 
         knowledge_areas: ka.key }

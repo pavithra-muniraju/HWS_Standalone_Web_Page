@@ -15,6 +15,7 @@ interface ApiItem {
   issue_title: string;
   issue_description: string;
   filepath?:string;
+  filename?:string;
   metadatas: { [key: string]: string };
 }
 @Component({
