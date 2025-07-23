@@ -100,3 +100,27 @@
     overflow-y: auto; 
     padding-right: 0.5rem;
   }
+  
+  .slider-values{
+    padding-top: 10px;
+    padding-left: 30px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+  }
+  
+  .clear-icon {
+    cursor: pointer;
+    font-size: 18px;
+    color: #888;
+  
+    &:hover {
+      color: #d9534f;
+    }
+  }
+  .p-slider-type{
+    width: 90%;
+    margin-left: 11px;
+  }

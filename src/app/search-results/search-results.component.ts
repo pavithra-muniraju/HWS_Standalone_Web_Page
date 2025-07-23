@@ -9,7 +9,12 @@ import { apiUrl } from './../config/apiUrl';
 interface FilterItem {
   display:string;
   key: string;
-  values: { label: string; count: number; selected: boolean }[]
+  values: { label: string; count: number; selected: boolean }[],
+  isRange?: boolean;
+  min?: number;
+  max?: number;
+  range?: number[];
+  count?: number;
 }
 interface ApiItem {
   issue_title: string;
@@ -30,7 +35,7 @@ export class SearchResultsComponent {
   filteredResults: ApiItem[] = [];
   filterKeys =[{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
   { display: 'Department', keyValue: 'department' },
-  { display: 'Publish Date', keyValue: 'publish_date' },
+  { display: 'Publish Date', keyValue: 'publish_date',isRange: true  },
   { display: 'Project Code', keyValue: 'project_code' },
   { display: 'MLH', keyValue: 'mlh_category' },
   { display: 'Author', keyValue: 'author' }]
@@ -38,7 +43,8 @@ export class SearchResultsComponent {
   searchResult: any = [];
   apiSubscription: Subscription | undefined;
   loggedInUserDepartment: string | null = '';
- 
+  currentYear = new Date().getFullYear();
+
 
   constructor(private route: ActivatedRoute, private router: Router,  private sharedDataService: SharedDataService,private http: HttpClient,private messageService: MessageService) {}
   ngOnInit(): void {
@@ -47,6 +53,7 @@ export class SearchResultsComponent {
     const searchQuery = this.sharedDataService.getQuery();
     if (searchedResult.length>0) {
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
+      console.log(this.allResults,'rr')
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
       this.applyFilters();
@@ -57,8 +64,21 @@ export class SearchResultsComponent {
     }
     
   }
+  
   initFilterGroups(): void {
     this.filterGroups = this.filterKeys.map(keyObj  => {
+      if (keyObj.isRange) {
+        return {
+          display: keyObj.display,
+          key: keyObj.keyValue,
+          isRange: true,
+          min: 1950,
+          max: this.currentYear,
+          range: [1950, this.currentYear],
+          values: [],
+          count: this.allResults.length
+        };
+      }
       const counts: { [label: string]: number } = {};
       this.allResults.forEach(item => {
         const value = item.metadatas?.[keyObj.keyValue];
@@ -66,7 +86,6 @@ export class SearchResultsComponent {
           counts[value] = (counts[value] || 0) + 1;
         }
       });
-
       return {
         display: keyObj.display,
         key: keyObj.keyValue,
@@ -76,34 +95,59 @@ export class SearchResultsComponent {
           selected: false
         }))
       };
-    });
+    })
   }
+
   restoreFiltersFromQueryParams(): void {
     const queryParams = this.route.snapshot.queryParamMap;
     this.filterGroups.forEach(group => {
-      const selected = queryParams.getAll(this.toQueryParam(group.key));
-      group.values.forEach(v => {
-        v.selected = selected.includes(v.label);
-      });
+      if (group.isRange) {
+        const min = queryParams.get(`${this.toQueryParam(group.key)}_min`);
+        const max = queryParams.get(`${this.toQueryParam(group.key)}_max`);
+        if (min && max) {
+          group.range = [parseInt(min, 10), parseInt(max, 10)];
+        }
+      } else {
+        const selected = queryParams.getAll(this.toQueryParam(group.key));
+        group.values.forEach(v => (v.selected = selected.includes(v.label)));
+      }
     });
   }
+
   applyFilters(): void {
     this.filteredResults = this.allResults.filter(item => {
       return this.filterGroups.every(group => {
+        if (group.isRange && group.range) {
+          const year = this.extractYear(item.metadatas?.[group.key]);
+          return !isNaN(year) && year >= group.range[0] && year <= group.range[1];
+        }
         const selected = group.values.filter(v => v.selected).map(v => v.label);
         if (selected.length === 0) return true;
         const itemValue = item.metadatas?.[group.key];
         return selected.includes(itemValue);
-      });
+      })
     });
+    const publishDateGroup = this.filterGroups.find(g => g.isRange);
+    if (publishDateGroup) {
+      publishDateGroup.count = this.filteredResults.filter(item => {
+        const year = this.extractYear(item.metadatas?.[publishDateGroup.key]);
+        return !isNaN(year) && year >= publishDateGroup.range![0] && year <= publishDateGroup.range![1];
+      }).length
+    }
   }
   onFilterChange(): void {
-    const queryParams: { [key: string]: string[] } = {};
-
+    const queryParams: { [key: string]: any } = {};
     this.filterGroups.forEach(group => {
-      const selected = group.values.filter(v => v.selected).map(v => v.label);
-      if (selected.length > 0) {
-        queryParams[this.toQueryParam(group.key)] = selected;
+      if (group.isRange) {
+        if (group.range![0] !== 1950 || group.range![1] !== this.currentYear) {
+          queryParams[`${this.toQueryParam(group.key)}_min`] = group.range![0];
+          queryParams[`${this.toQueryParam(group.key)}_max`] = group.range![1];
+        }
+      } else {
+        const selected = group.values.filter(v => v.selected).map(v => v.label);
+        if (selected.length > 0) {
+          queryParams[this.toQueryParam(group.key)] = selected;
+        }
       }
     });
 
@@ -115,17 +159,33 @@ export class SearchResultsComponent {
 
     this.applyFilters();
   }
+
   resetFilters(): void {
     this.filterGroups.forEach(group => {
-      group.values.forEach(v => v.selected = false);
+      if (group.isRange) {
+        group.range = [1950, this.currentYear];
+      } else {
+        group.values.forEach(v => (v.selected = false));
+      }
     });
-
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {}
     });
 
     this.applyFilters();
+  }
+
+  // clearDateFilter(group: FilterItem): void {
+  //   group.range = [group.min!, group.max!];
+  //   this.onFilterChange();
+  // }
+
+  private extractYear(dateStr: string | undefined): number {
+    if (!dateStr) return NaN;
+    // gets last 4-digit year
+    const match = dateStr.match(/(\d{4})(?!.*\d{4})/); 
+    return match ? parseInt(match[0], 10) : NaN;
   }
 
   toQueryParam(key: string): string {
