@@ -18,6 +18,7 @@ import { CardModule } from 'primeng/card';
 import { AppRoutingModule } from './app-routing.module';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
+import {SliderModule} from 'primeng/slider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,7 +40,8 @@ import { ButtonModule } from 'primeng/button';
     CardModule,
     CheckboxModule,
     AppRoutingModule,
-    ButtonModule
+    ButtonModule,
+    SliderModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
