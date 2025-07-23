@@ -183,7 +183,8 @@ export class SearchResultsComponent {
 
   private extractYear(dateStr: string | undefined): number {
     if (!dateStr) return NaN;
-    const match = dateStr.match(/(\d{4})(?!.*\d{4})/); // gets last 4-digit year
+    // gets last 4-digit year
+    const match = dateStr.match(/(\d{4})(?!.*\d{4})/); 
     return match ? parseInt(match[0], 10) : NaN;
   }
 
