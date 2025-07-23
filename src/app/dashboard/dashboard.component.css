@@ -3,36 +3,36 @@
     margin: 1rem;
     border: 0;
     color: black;
-    background-color: white;
+    background-color: lightgray;
     flex-basis: 33.333%;
     flex-grow: 0;
     flex-shrink: 0;
-    height: 200px;
+    height: 170px;
     text-align: left;
-    min-width: 250px;
+    min-width: 200px;
     padding: 1.5rem;
     border-radius: 30px;
     cursor: pointer;
     font-size: 18px;
     font-weight: 500;
+    
+  }
+  .card:hover {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
 
 .cardBody {
     margin-top: 0.5rem;
-    font-size: 16px;
+    font-size: 18px;
     color: #5b5959;
     font-weight: bold;
   }
 .cardHeader {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
 }
 
-.knowledge {
-    margin: 2rem;
-    font-size: 20px;
-    font-weight: bold;
-    text-align: left;
+.cardFooter {
+  text-align: right;
+  margin-top: -0.5rem;
 }
-

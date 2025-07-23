@@ -1,80 +1,47 @@
-<div class="container rectangle1">
-    <div class="search-container">
-        <input type="text" [(ngModel)]="searchQuery" class="search-field" (keyup)="filterWords()"
-            (keyup.enter)="enableSearch || searchQuery?.trim() ? getSearchResult() : ''"
-            (focus)="toggleWordSearch(true)" placeholder="How can I help you?" />
-        <div *ngIf="searchQuery" class="clear-search">
-            <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
+<div class="container">
+    <div class="left-container">
+        <div class="dashboard">Dashboard</div>
+        <div class="sideNav">
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Home</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Lesson Learned</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Design Guidelines</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Test Standards</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>NPD Processes</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>QA Lesson Learned</div>
+            <div class="navItems"><i class="fas fa-chevron-right icon"></i>PTS</div>
         </div>
- 
-        <button class="search-btn" [ngClass]="(enableSearch || searchQuery?.trim()) ? 'pointer-cursor' : 'pointer-none'"
-            (click)="getSearchResult()" [disabled]="!(enableSearch || searchQuery?.trim())">Search
-        </button>
- 
     </div>
- 
-    <div #resultContainer>
-        <div class="result">
-            <div class="section snippet-section">
-                <div *ngIf="loading;" class="loader-pos">
-                    <span class="loader"></span>
-                </div>
-                <app-dashboard [list]="searchResult" *ngIf="searchResult.length > 0"></app-dashboard>
-                <!-- <ng-template #snippetcontent>
-                    <div *ngIf="initialLoad;else tableContent">
- 
+    <div class="right-container">
+        <div class="search-container">
+            <div class="clear-search">
+                <img class="search" src="./assets/search.png"/>
+            </div>
+            <input type="text" [(ngModel)]="searchQuery" class="search-field" (keyup)="filterWords()"
+                (keyup.enter)="enableSearch || searchQuery?.trim() ? getSearchResult() : ''"
+                (focus)="toggleWordSearch(true)" placeholder="How can I help you?" />
+            <div *ngIf="searchQuery" class="clear-search">
+                <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
+            </div>
+     
+            <button class="search-btn pointer-cursor" 
+                (click)="getSearchResult()" [disabled]="!(enableSearch || searchQuery?.trim())">Search
+            </button>
+     
+        </div>
+     
+        <div #resultContainer>
+            <div class="result">
+                <div class="section snippet-section">
+                    <div *ngIf="loading;" class="loader-pos">
+                        <span class="loader"></span>
                     </div>
-                    <ng-template #tableContent>
-                        <p-table [value]="searchResult" [tableStyle]="{ 'min-width': '50rem' }"
-                            styleClass="p-datatable-gridlines"  [paginator]="true" [rows]="6">
-                            <ng-template pTemplate="header">
-                                <tr>
-                                    <th style="width:2%">Sl. No.</th>
-                                    <th style="width:30%">Issue Title</th>
-                                    <th style="width:60%">Issue Description</th>
-                                    <th style="width:8%">Read More</th>
-                                </tr>
-                            </ng-template>
- 
-                            <ng-template pTemplate="body" let-product let-i="rowIndex">
-                                <tr>
-                                    <td>{{ i + 1 }}</td>
-
-                                    <td class="ellipsis" pTooltip="{{product.issue_title || searchQuery}}" tooltipPosition="top">
-                                        <ng-container *ngIf="product.flag == 'hws' && product.issue_title == '' ; else issueTitle">
-                                            {{searchQuery | titlecase}}
-                                        </ng-container>
-                                   
-                                        <ng-template #issueTitle>
-                                            {{product.issue_title   }}
-                                        </ng-template>
-                                    </td>
-                                    <td class="ellipsis" pTooltip={{product.content}} tooltipPosition="top">{{product.content}}</td>
-                                    <td>
-                                        <ng-container *ngIf="product.flag=='hws'">
-                                            <a [href]="'https://hws.heromotocorp.com/jspui/handle/123456789/'+product.filepath" target="_blank">HWS</a>
-                                        </ng-container>
- 
-                                        <ng-container *ngIf="product.flag=='pts'">
-                                            <a (click)="showDialog(product)" style="cursor:pointer;">PTS
-                                                WebPage</a>
-                                        </ng-container>
-                                    </td>
-                                </tr>
-                            </ng-template>
- 
-                            <ng-template pTemplate="emptymessage">
-                                <tr>
-                                    <td colspan="4" class="empty-msg">No data available for this search result</td>
-                                </tr>
-                            </ng-template>
-                        </p-table>
-                    </ng-template>
-                </ng-template> -->
- 
+                    <app-dashboard [list]="searchResult" *ngIf="searchResult.length > 0"></app-dashboard>
+                    
+                </div>
             </div>
         </div>
     </div>
+    
 </div>
  
 <p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"

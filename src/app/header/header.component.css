@@ -8,21 +8,36 @@
 }
  
 .hero-logo {
-    position: absolute;
-    left: 0;
-    width: 160px;
-    padding: 5px 0px 0 10px;
+    width: 240px;
 }
  
 .logo {
-    margin: 0 auto;
     width: 175px;
 } 
-.home-icon {
+.home {
+    width: 2.2rem;
+    margin-right: 1rem;
+    float: right;
+    margin-top: 0.5rem;
+    cursor: pointer;
+}
+
+.search-results {
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 0.5rem;
+    margin-left: -16rem;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    background: linear-gradient(90deg, rgb(99 99 99 / 58%) 0%, rgba(251, 251, 251, 1) 30%);
+}
+/* .home-icon {
     position: absolute;
     right: 50px;
     font-size: 20px;
     color: #555;
     cursor: pointer;
   }
-  
+   */

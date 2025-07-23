@@ -1,16 +1,16 @@
 .search-container {
     display: flex;
-    justify-content: center;
-    height: 40px;
+    padding: 0rem 2rem;
 }
  
 .search-field {
-    width: 40%;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
+    width: 70%;
+    height: 40px;
+    border-radius: 20px;
     border: 1px solid #0000002b;
     border-right: 0;
-    padding: 0 15px;
+    padding: 0 38px;    
+    background: linear-gradient(90deg,rgba(87, 87, 89, 0.39) 0%, rgba(237, 237, 237, 1) 100%);
     font-size: 12px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
     font-size: 14px;
@@ -34,9 +34,13 @@ input:focus {
  
 .pointer-cursor {
     cursor: pointer;
-    color: white;
-    font-weight: 500;
-    background-color: #7ed57ec7;
+    color: black;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 16px;
+    width: 150px;
+    margin-left: 2rem;
+    background-color: #a6a6a6;
     border: 0;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
 }
@@ -59,6 +63,7 @@ input:focus {
     padding: 20px 20px;
     justify-content: space-between;
     height: calc(100vh - 150px);
+    overflow: auto;
 }
  
 ::ng-deep .p-datatable.p-datatable-gridlines .p-datatable-thead>tr>th {
@@ -343,6 +348,7 @@ input:focus {
     max-width: 40%;
 }
 
+/* not used */
 .rectangle1 {       
     flex-shrink: 0;
     background-image: url(/assets/wallpaperflare.com_wallpaper.jpg);
@@ -357,3 +363,51 @@ input:focus {
     overflow-x: hidden;
     overflow-y: auto;
   }
+
+  .search {
+    width: 33px;
+    height: 18px;
+    position: absolute;
+    right: -9px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+.container {
+    display: flex;
+    gap: 1.5rem;
+    height: calc(100vh - 92px);
+    overflow: auto;  
+    padding: 1rem;
+    box-sizing: border-box;
+    background: linear-gradient(90deg, rgb(99 99 99 / 58%) 0%, rgba(251, 251, 251, 1) 30%);
+}
+.left-container {
+    min-width: 200px;
+}
+.right-container {
+    width: 100%;
+}
+
+.dashboard{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.sideNav {
+    margin: 1rem;
+    font-size: 14px;
+}
+.navItems {
+    padding: 0.5rem;
+}
+.navItems:hover {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.icon {
+    margin-right: 6px;
+    font-size: 13px;
+}

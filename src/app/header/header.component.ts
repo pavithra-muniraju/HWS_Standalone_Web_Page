@@ -11,6 +11,9 @@ export class HeaderComponent {
   constructor(private router: Router) {}
  
   backToHome(): void {
+    let redirectUrl = this.router.url;
+    console.log(redirectUrl);
+    
     this.router.navigate(['']);
   }
 }
