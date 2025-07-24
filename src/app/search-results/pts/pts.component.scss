@@ -1,0 +1,142 @@
+.search-layout {
+    display: flex;
+    gap: 1.5rem;
+    height: 85vh;
+    padding: 1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .filter-panel {
+    flex: 0 0 20%;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+    height: 100%;
+    padding: 1rem;
+    box-sizing: border-box;
+    border-right: 1px solid #ccc;
+  }
+  
+  .filter-header {
+    margin-bottom: 1rem;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .card-panel {
+    flex: 1;
+    overflow-y: auto;
+    height: 100%;
+    padding-right: 0.5rem;
+    box-sizing: border-box;
+  }
+  
+  .result-item {
+    background-color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.125);
+  }
+  
+  .result-title {
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .result-desc {
+    font-size: 14px;
+    color: #555;
+    margin: 0;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .read-now-btn {
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-top: 0.5rem;
+  }
+  
+  .result-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .result-title-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    font-size: 14px;
+  }
+  .nav-items{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+  
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.progress-icon {
+  font-size: 14px;
+  padding-bottom: 6px;
+}
+.info-row {
+  display: contents;
+  /* Allow each item to span across columns */
+}
+
+.info-label,
+.info-value {
+  padding: 6px;
+  /* Padding inside each cell */
+  border: 1px solid #ddd;
+  /* Border for table-like appearance */
+  background-color: #f9f9f9;
+  /* Light background for better visibility */
+  text-align: left;
+  /* Align text to the left */
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.info-label {
+  background-color: #f2f2f2;
+  /* Slightly darker background for labels */
+}
+.info-container {
+  display: grid;
+  /* Use CSS Grid */
+  grid-template-columns: auto auto;
+  /* Two columns for label and value */
+  width: 100%;
+  /* Full width */
+  border: 1px solid #ddd;
+  /* Outer border */
+  border-collapse: collapse;
+  /* Collapse borders */
+  margin-top: 20px;
+  /* Space from top */
+}

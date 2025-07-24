@@ -53,7 +53,6 @@ export class SearchResultsComponent {
     const searchQuery = this.sharedDataService.getQuery();
     if (searchedResult.length>0) {
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
-      console.log(this.allResults,'rr')
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
       this.applyFilters();

@@ -22,11 +22,18 @@ export class DashboardComponent {
   getAllUniqueKnowledgeAreaItems(ka:any) {
     console.log(ka)
     this.sharedDataService.setData(this.list);
-    localStorage.setItem('knowledge_areas', ka.key);
-    this.router.navigate(['/search-results'], {
-      queryParams: { 
-        knowledge_areas: ka.key }
-    });
+    if(ka.key === 'PTS' ){
+      this.router.navigate(['pts']);
+      localStorage.setItem('searched_results',ka.key)
+    }
+    else{
+      localStorage.setItem('knowledge_areas', ka.key);
+      this.router.navigate(['/search-results'], {
+        queryParams: { 
+          knowledge_areas: ka.key }
+      });
+    }
+   
   }
 
   getUniqueKnowledgeArea(){

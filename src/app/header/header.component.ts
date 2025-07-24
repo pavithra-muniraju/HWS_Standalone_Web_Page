@@ -17,8 +17,5 @@ export class HeaderComponent {
     } else {
       window.location.href = 'https://hws.heromotocorp.com/jspui'
     }
-  
-    
-    
   }
 }
