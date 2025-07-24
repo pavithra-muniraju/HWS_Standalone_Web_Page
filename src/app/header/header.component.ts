@@ -11,8 +11,11 @@ export class HeaderComponent {
   constructor(private router: Router) {}
  
   backToHome(): void {
-    let redirectUrl = this.router.url;
-    console.log(redirectUrl);
-    this.router.navigate(['']);
+    let presentURL = this.router.url;
+    if(presentURL !== '/' ) {
+      this.router.navigate(['']);
+    } else {
+      window.location.href = 'https://hws.heromotocorp.com/jspui'
+    }
   }
 }
