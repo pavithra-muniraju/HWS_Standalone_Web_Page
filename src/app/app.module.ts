@@ -19,6 +19,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import {SliderModule} from 'primeng/slider';
+import { PtsComponent } from './search-results/pts/pts.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,7 +28,8 @@ import {SliderModule} from 'primeng/slider';
     HeaderComponent,
     FooterComponent,
     DashboardComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    PtsComponent
   ],
   imports: [
     BrowserModule,

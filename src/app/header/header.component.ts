@@ -13,7 +13,6 @@ export class HeaderComponent {
   backToHome(): void {
     let redirectUrl = this.router.url;
     console.log(redirectUrl);
-    
     this.router.navigate(['']);
   }
 }

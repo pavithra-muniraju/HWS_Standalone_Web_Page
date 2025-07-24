@@ -1,0 +1,88 @@
+<div class="search-layout">
+    <!-- Left Panel--->
+    <div class="filter-panel">
+        <div class="filter-header">Search Results</div>
+        <div class="side-nav">
+          <div class="nav-items"><i class="fas fa-chevron-right icon"></i>PTS</div>
+        </div>
+    </div>
+  
+    <!-- Right Panel (Cards) -->
+    <div class="card-panel">
+      <div class="result-item" *ngFor="let item of filteredResults">
+        <div class="result-title-section">
+          <div class="result-title">{{ item.issue_title }}</div>
+          <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i>
+        </div>
+        <div class="result-bottom-row">
+          <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
+          <button class="read-now-btn" (click)="openSummary(item)" >Read Now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
+    [style]="{ width: '68%' }" [draggable]="false" [resizable]="false" [modal]="true"
+    [closable]="summaryLoading ? false : true">
+ 
+    <div class="info-container">
+        <div class="info-row">
+            <div class="info-label">PTS NO</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Object'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Model Code</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Model Code'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Issue Title</div>
+            <div class="info-value">{{ metaData?.['issue_title'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Issue Description</div>
+            <div class="info-value">{{ metaData?.['issue_description'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Part No</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Part Number'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Part Name</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Part Name'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Event</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Event'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Date of Initiation</div>
+            <div class="info-value">{{ metaData?.['request_date'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Initiator Department</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Initiator Dept'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Severity</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Severity'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Root Cause Description</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Root Cause Description'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Countermesure Details</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Countermeasure Details'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Solver Group</div>
+            <div class="info-value">{{ metaData?.metadatas?.['Solver Group'] }}</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Designer Group</div>
+            <div class="info-value">{{ metaData?.['design_group'] }}</div>
+        </div>
+    </div>
+    
+ 
+</p-dialog>
