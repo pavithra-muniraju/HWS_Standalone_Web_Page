@@ -406,6 +406,10 @@ input:focus {
     font-weight: bold;
     cursor: pointer;
 }
+.kaNavItem {
+    font-size: 15px;
+    padding: 0.5rem;
+}
 
 .icon {
     margin-right: 6px;

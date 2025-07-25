@@ -39,6 +39,9 @@ export class ChatWindowComponent implements OnInit {
   loggedInUserDepartment: string | null = '';
  
   getEmailIDFromHWS: any = '';
+
+  kaList:any = [];
+  
   constructor(private http: HttpClient, private messageService: MessageService, private sharedDataService: SharedDataService,
     // private route: ActivatedRoute
   ) {
@@ -190,4 +193,11 @@ export class ChatWindowComponent implements OnInit {
   )
   }
  
+  navigateToHWS() {
+    window.location.href = 'https://hws.heromotocorp.com/jspui';
+  }
+
+  receiveKAList(kaList:any) {
+    this.kaList = kaList;
+  }
 }

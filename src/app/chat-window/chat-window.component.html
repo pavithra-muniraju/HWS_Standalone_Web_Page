@@ -2,14 +2,19 @@
     <div class="left-container">
         <div class="dashboard">Dashboard</div>
         <div class="sideNav">
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Home</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Lesson Learned</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Design Guidelines</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>Test Standards</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>NPD Processes</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>QA Lesson Learned</div>
-            <div class="navItems"><i class="fas fa-chevron-right icon"></i>PTS</div>
+            <div class="kaNavItem"><b>Knowledge Areas</b></div>
+            <div *ngFor="let ka of kaList">
+                <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>{{ka.key}}</div>
+            </div>
+            <!-- <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>Lesson Learned</div>
+            <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>Design Guidelines</div>
+            <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>Test Standards</div>
+            <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>NPD Processes</div>
+            <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>QA Lesson Learned</div>
+            <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>PTS</div> -->
+           
         </div>
+   
     </div>
     <div class="right-container">
         <div class="search-container">
@@ -35,7 +40,7 @@
                     <div *ngIf="loading;" class="loader-pos">
                         <span class="loader"></span>
                     </div>
-                    <app-dashboard [list]="searchResult" *ngIf="searchResult.length > 0"></app-dashboard>
+                    <app-dashboard [list]="searchResult" (kaEvent)="receiveKAList($event)" *ngIf="searchResult.length > 0"></app-dashboard>
                     
                 </div>
             </div>

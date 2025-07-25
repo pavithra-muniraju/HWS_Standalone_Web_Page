@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedDataService } from '../services/shared-data.service';
 
@@ -11,6 +11,7 @@ export class DashboardComponent {
   @Input() list:any = [];
   query:any = '';
 
+  @Output() kaEvent = new EventEmitter<any>();
   uniqueKnowledgeAreasWithCount:any = [];
   constructor(private cdr: ChangeDetectorRef,private router: Router,private sharedDataService: SharedDataService) {}
  
@@ -51,6 +52,11 @@ export class DashboardComponent {
     });
     let ptsCount  = this.list.filter((obj:any) => obj.flag == 'pts').length;
     this.uniqueKnowledgeAreasWithCount.push({ key: 'PTS', value: ptsCount })
-  
+    this.updateList();
   }
+  updateList() {
+    this.kaEvent.emit(this.uniqueKnowledgeAreasWithCount);
+  }
+
+
 }
