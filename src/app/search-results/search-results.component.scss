@@ -130,3 +130,39 @@
     font-weight: bold;
     color: #333;
   }
+
+  .p-autocomplete-input {
+    font-size: 16px;
+    padding: 8px;
+  }
+  
+  /* Styles for the suggestion list items */
+  .p-autocomplete-item {
+    padding: 10px;
+    background-color: red;
+  }
+  
+  .p-autocomplete-item:hover {
+    background-color: green;
+  }
+
+ 
+::ng-deep .p-autocomplete-input {
+  display: block;
+  width: 20vw;
+  font-size: 12px;
+  border-radius: 20px;
+}
+
+::ng-deep p-autocomplete-panel .p-autocomplete-items {
+   padding: 0 !important;
+   font-size: 12px; 
+}
+
+:host ::ng-deep .p-autocomplete-panel {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  z-index: 1000;
+  width: -webkit-fill-available;
+}

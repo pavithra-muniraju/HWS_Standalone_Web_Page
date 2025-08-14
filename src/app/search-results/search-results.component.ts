@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { SharedDataService } from '../services/shared-data.service';
@@ -15,6 +15,7 @@ interface FilterItem {
   max?: number;
   range?: number[];
   count?: number;
+  searchedkey?: string;
 }
 interface ApiItem {
   issue_title: string;
@@ -31,6 +32,8 @@ interface ApiItem {
 
 export class SearchResultsComponent {
 
+  items: any[] = [{ value: null }]; // Represents dynamic textboxes
+  filteredSuggestions: any[] = [[]];
   allResults: ApiItem[] = [];
   filteredResults: ApiItem[] = [];
   filterKeys =[{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
@@ -46,7 +49,9 @@ export class SearchResultsComponent {
   currentYear = new Date().getFullYear();
 
 
-  constructor(private route: ActivatedRoute, private router: Router,  private sharedDataService: SharedDataService,private http: HttpClient,private messageService: MessageService) {}
+  constructor(private route: ActivatedRoute, private router: Router,  
+    private sharedDataService: SharedDataService,private http: HttpClient,
+    private messageService: MessageService, private cdr: ChangeDetectorRef) {}
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas') ;
     const searchedResult = this.sharedDataService.getData();
@@ -110,6 +115,7 @@ export class SearchResultsComponent {
         const selected = queryParams.getAll(this.toQueryParam(group.key));
         group.values.forEach(v => (v.selected = selected.includes(v.label)));
       }
+      this.items.push({ value: null, key: group.key });
     });
   }
 
@@ -135,6 +141,7 @@ export class SearchResultsComponent {
     }
   }
   onFilterChange(): void {
+    this.items = [];
     const queryParams: { [key: string]: any } = {};
     this.filterGroups.forEach(group => {
       if (group.isRange) {
@@ -148,6 +155,7 @@ export class SearchResultsComponent {
           queryParams[this.toQueryParam(group.key)] = selected;
         }
       }
+      this.items.push({ value: null, key: group.key });
     });
 
     this.router.navigate([], {
@@ -238,5 +246,36 @@ export class SearchResultsComponent {
     console.log(filepath,'path')
     const url = `https://hws.heromotocorp.com/jspui/handle/123456789/${filepath}`;
     window.open(url, '_blank');
+  }
+
+  search(key: any, event: any, index: number) {    
+    let filterKey = this.filterGroups.filter(item => item.key == key);
+    this.filteredSuggestions[index] = filterKey[0].values.filter(suggestion =>
+      suggestion.label.toLowerCase().includes(event.query.toLowerCase())
+    );
+    
+    console.log(this.filterGroups);
+    console.log(this.items)
+    console.log(this.filteredSuggestions);
+  }
+
+  handleSelect(event:any,key:any) {
+    console.log(event);
+    const queryParams: { [key: string]: any } = {};
+    this.filterGroups.forEach(ele => {
+      if(ele.key == key) {
+        ele.values.forEach(data => {
+          if(data.label == event.value.label) {
+            data.selected = true;
+          }
+        })
+      }
+      this.onFilterChange();
+    });
+  }
+
+  addItem() {
+    this.items.push({ value: null });
+    this.filteredSuggestions.push([]);
   }
 }

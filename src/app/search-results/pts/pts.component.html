@@ -12,7 +12,8 @@
       <div class="result-item" *ngFor="let item of filteredResults">
         <div class="result-title-section">
           <div class="result-title">{{ item.issue_title }}</div>
-          <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i>
+          <span class="result-title">{{item.metadatas?.['Severity']}}</span>
+          <!-- <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i> -->
         </div>
         <div class="result-bottom-row">
           <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>

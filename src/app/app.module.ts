@@ -20,6 +20,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import {SliderModule} from 'primeng/slider';
 import { PtsComponent } from './search-results/pts/pts.component';
+import { AutoCompleteModule } from 'primeng/autocomplete';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { PtsComponent } from './search-results/pts/pts.component';
     CheckboxModule,
     AppRoutingModule,
     ButtonModule,
-    SliderModule
+    SliderModule,
+    AutoCompleteModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

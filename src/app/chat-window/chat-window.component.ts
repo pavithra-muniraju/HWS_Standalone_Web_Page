@@ -194,7 +194,9 @@ export class ChatWindowComponent implements OnInit {
   }
  
   navigateToHWS() {
-    window.location.href = 'https://hws.heromotocorp.com/jspui';
+    console.log('window.location.href',window.location.href)
+    var location = window.location.href.toString().replace("HWSext","jspui");    
+    window.location.href = location;
   }
 
   receiveKAList(kaList:any) {

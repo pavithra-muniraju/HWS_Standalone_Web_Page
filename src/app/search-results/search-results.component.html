@@ -3,7 +3,7 @@
   <div class="filter-panel">
     <div class="filter-header">Filters</div>
     <div class="filter-groups">
-      <div *ngFor="let group of filterGroups" class="filter-group">
+      <div *ngFor="let group of filterGroups; let i = index" class="filter-group">
         <h5>{{ group.display }}
 
         </h5>
@@ -35,8 +35,15 @@
           <div *ngFor="let filter of group.values" class="filter-item">
             <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
               [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
-            </p-checkbox>
+            </p-checkbox>          
           </div>
+          <div *ngFor="let item of items; let i = index">
+            
+          <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]" *ngIf="item.key == group.key" placeholder="Search"
+                      (completeMethod)="search(group.key, $event, i)" field="label" (onSelect)="handleSelect($event, group.key)">
+      </p-autoComplete>
+    
+      </div>
         </ng-template>
       </div>
     </div>

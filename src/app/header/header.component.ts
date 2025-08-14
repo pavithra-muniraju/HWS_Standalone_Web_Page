@@ -15,7 +15,10 @@ export class HeaderComponent {
     if(presentURL !== '/' ) {
       this.router.navigate(['']);
     } else {
-      window.location.href = 'https://hws.heromotocorp.com/jspui'
+      // window.location.href = 'https://hws.heromotocorp.com/jspui'
+      console.log('window.location.href',window.location.href)
+      var location = window.location.href.toString().replace("HWSext","jspui");    
+      window.location.href = location;
     }
   }
 }
