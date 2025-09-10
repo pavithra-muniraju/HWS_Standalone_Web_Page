@@ -50,8 +50,8 @@ export class ChatWindowComponent implements OnInit {
  
   ngOnInit() {
 
-    sessionStorage.setItem('query','hws');
-    sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
+    // sessionStorage.setItem('query','hws');
+    // sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
     
     this.searchQuery = sessionStorage.getItem('query');
     this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId');
@@ -103,6 +103,8 @@ export class ChatWindowComponent implements OnInit {
         data = data.filter((a: any) => a.flag == 'hws')
         this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
       }
+      console.log(this.searchResult)
+      
     },
       err => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 })

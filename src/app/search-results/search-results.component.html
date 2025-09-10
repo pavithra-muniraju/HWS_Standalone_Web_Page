@@ -4,9 +4,7 @@
     <div class="filter-header">Filters</div>
     <div class="filter-groups">
       <div *ngFor="let group of filterGroups; let i = index" class="filter-group">
-        <h5>{{ group.display }}
-
-        </h5>
+        <h3>{{ group.display }}</h3>
         <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
           <div class="slider-row">
             <p-slider 
@@ -54,7 +52,7 @@
   <div class="card-panel">
     <div class="result-item" *ngFor="let item of filteredResults">
       <div class="result-title-section">
-        <div class="result-title">{{ item.issue_title }}</div>
+        <div class="result-title">{{ item.metadatas['title'] }}</div>
         <span *ngIf="item.filename?.endsWith('.xlsx') || item.filename?.endsWith('.xls')"><i
             class="fa-solid fa-file-excel"></i></span>
         <span *ngIf="item.filename?.endsWith('.doc') || item.filename?.endsWith('.docx')"><i
@@ -65,7 +63,7 @@
         <span *ngIf="item.filename?.endsWith('.pdf')"><i class="fa-solid fa-file-pdf"></i></span>
       </div>
       <div class="result-bottom-row">
-        <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
+        <p class="result-desc" [title]="item.metadatas['sub_department']">{{item.metadatas['sub_department'] }}</p>
         <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
       </div>
     </div>

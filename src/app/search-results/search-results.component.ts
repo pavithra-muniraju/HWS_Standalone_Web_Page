@@ -243,8 +243,11 @@ export class SearchResultsComponent {
 
   }
   navigateToFile(filepath:any){
-    console.log(filepath,'path')
-    const url = `https://hws.heromotocorp.com/jspui/handle/123456789/${filepath}`;
+    console.log(filepath,'path');
+    var location = window.location.href.toString().split("HWSext");    
+      // window.location.href = location
+    // const url1 = `https://hws.heromotocorp.com/jspui/handle/123456789/${filepath}`;
+    const url = location[0]+ "jspui/handle/123456789/" + filepath;
     window.open(url, '_blank');
   }
 
@@ -257,6 +260,7 @@ export class SearchResultsComponent {
     console.log(this.filterGroups);
     console.log(this.items)
     console.log(this.filteredSuggestions);
+    console.log(this.filteredResults)
   }
 
   handleSelect(event:any,key:any) {
