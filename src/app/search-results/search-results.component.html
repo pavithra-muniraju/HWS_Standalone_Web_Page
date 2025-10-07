@@ -7,13 +7,8 @@
         <h3>{{ group.display }}</h3>
         <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
           <div class="slider-row">
-            <p-slider 
-              [(ngModel)]="group.range"
-              [min]="group.min!"
-              [max]="group.max!"
-              [range]="true"
-              (onSlideEnd)="onFilterChange()"
-               class="p-slider-type">
+            <p-slider [(ngModel)]="group.range" [min]="group.min!" [max]="group.max!" [range]="true"
+              (onSlideEnd)="onFilterChange()" class="p-slider-type">
             </p-slider>
             <!-- reset publish date  -->
             <!-- <i 
@@ -33,15 +28,16 @@
           <div *ngFor="let filter of group.values" class="filter-item">
             <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
               [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
-            </p-checkbox>          
+            </p-checkbox>
           </div>
           <div *ngFor="let item of items; let i = index">
-            
-          <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]" *ngIf="item.key == group.key" placeholder="Search"
-                      (completeMethod)="search(group.key, $event, i)" field="label" (onSelect)="handleSelect($event, group.key)">
-      </p-autoComplete>
-    
-      </div>
+
+            <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]"
+              *ngIf="item.key == group.key" placeholder="Search" (completeMethod)="search(group.key, $event, i)"
+              field="label" (onSelect)="handleSelect($event, group.key)">
+            </p-autoComplete>
+
+          </div>
         </ng-template>
       </div>
     </div>
@@ -50,7 +46,22 @@
 
   <!-- Right Panel (Cards) -->
   <div class="card-panel">
-    <div class="result-item" *ngFor="let item of filteredResults">
+    <div class="search-container">
+      <div class="clear-search">
+        <img class="search" src="./assets/search.png" />
+      </div>
+      <input type="text" [(ngModel)]="searchQuery" class="search-field" placeholder="Search" />
+      <div *ngIf="searchQuery" class="clear-search">
+        <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
+      </div>
+      <!-- -->
+      <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())" 
+      >Search
+      </button>
+
+    </div>
+    <div class="searchResults">
+      <div class="result-item" *ngFor="let item of filteredResults">
       <div class="result-title-section">
         <div class="result-title">{{ item.metadatas['title'] }}</div>
         <span *ngIf="item.filename?.endsWith('.xlsx') || item.filename?.endsWith('.xls')"><i
@@ -67,5 +78,9 @@
         <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
       </div>
     </div>
+    </div>
+    
   </div>
 </div>
+
+<p-toast></p-toast>

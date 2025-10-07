@@ -3,29 +3,45 @@
     <div class="filter-panel">
         <div class="filter-header">Search Results</div>
         <div class="side-nav">
-          <div class="nav-items"><i class="fas fa-chevron-right icon"></i>PTS</div>
+            <div class="nav-items"><i class="fas fa-chevron-right icon"></i>PTS</div>
         </div>
     </div>
-  
+
     <!-- Right Panel (Cards) -->
     <div class="card-panel">
-      <div class="result-item" *ngFor="let item of filteredResults">
-        <div class="result-title-section">
-          <div class="result-title">{{ item.issue_title }}</div>
-          <span class="result-title">{{item.metadatas?.['Severity']}}</span>
-          <!-- <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i> -->
+        <div class="search-container">
+            <div class="clear-search">
+                <img class="search" src="./assets/search.png" />
+            </div>
+            <input type="text" [(ngModel)]="searchQuery" class="search-field" placeholder="Search" />
+            <div *ngIf="searchQuery" class="clear-search">
+                <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
+            </div>
+            <!-- -->
+            <button class="search-btn pointer-cursor" (click)="getSearchedResult()"
+                [disabled]="!(searchQuery.trim())">Search
+            </button>
+
         </div>
-        <div class="result-bottom-row">
-          <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
-          <button class="read-now-btn" (click)="openSummary(item)" >Read Now</button>
+        <div class="searchResults">
+            <div class="result-item" *ngFor="let item of filteredResults">
+                <div class="result-title-section">
+                    <div class="result-title">{{ item.issue_title }}</div>
+                    <span class="result-title">{{item.metadatas?.['Severity']}}</span>
+                    <!-- <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i> -->
+                </div>
+                <div class="result-bottom-row">
+                    <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
+                    <button class="read-now-btn" (click)="openSummary(item)">Read Now</button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  <p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
+</div>
+<p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
     [style]="{ width: '68%' }" [draggable]="false" [resizable]="false" [modal]="true"
     [closable]="summaryLoading ? false : true">
- 
+
     <div class="info-container">
         <div class="info-row">
             <div class="info-label">PTS NO</div>
@@ -84,6 +100,8 @@
             <div class="info-value">{{ metaData?.['design_group'] }}</div>
         </div>
     </div>
-    
- 
+
+
 </p-dialog>
+
+<p-toast></p-toast>

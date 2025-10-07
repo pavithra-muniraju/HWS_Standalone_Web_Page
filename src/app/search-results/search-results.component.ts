@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 import { apiUrl } from './../config/apiUrl';
 
 interface FilterItem {
-  display:string;
+  display: string;
   key: string;
   values: { label: string; count: number; selected: boolean }[],
   isRange?: boolean;
@@ -20,8 +20,8 @@ interface FilterItem {
 interface ApiItem {
   issue_title: string;
   issue_description: string;
-  filepath?:string;
-  filename?:string;
+  filepath?: string;
+  filename?: string;
   metadatas: { [key: string]: string };
 }
 @Component({
@@ -32,13 +32,14 @@ interface ApiItem {
 
 export class SearchResultsComponent {
 
+  searchQuery = '';
   items: any[] = [{ value: null }]; // Represents dynamic textboxes
   filteredSuggestions: any[] = [[]];
   allResults: ApiItem[] = [];
   filteredResults: ApiItem[] = [];
-  filterKeys =[{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
+  filterKeys = [{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
   { display: 'Department', keyValue: 'department' },
-  { display: 'Publish Date', keyValue: 'publish_date',isRange: true  },
+  { display: 'Publish Date', keyValue: 'publish_date', isRange: true },
   { display: 'Project Code', keyValue: 'project_code' },
   { display: 'MLH', keyValue: 'mlh_category' },
   { display: 'Author', keyValue: 'author' }]
@@ -49,28 +50,28 @@ export class SearchResultsComponent {
   currentYear = new Date().getFullYear();
 
 
-  constructor(private route: ActivatedRoute, private router: Router,  
-    private sharedDataService: SharedDataService,private http: HttpClient,
-    private messageService: MessageService, private cdr: ChangeDetectorRef) {}
+  constructor(private route: ActivatedRoute, private router: Router,
+    private sharedDataService: SharedDataService, private http: HttpClient,
+    private messageService: MessageService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
-    const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas') ;
+    const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
-    if (searchedResult.length>0) {
+    if (searchedResult.length > 0) {
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
       this.applyFilters();
     } else {
       if (searchQuery) {
-        this.getSearchResult(searchQuery,group);
-      } 
+        this.getSearchResult(searchQuery, group);
+      }
     }
-    
+
   }
-  
+
   initFilterGroups(): void {
-    this.filterGroups = this.filterKeys.map(keyObj  => {
+    this.filterGroups = this.filterKeys.map(keyObj => {
       if (keyObj.isRange) {
         return {
           display: keyObj.display,
@@ -191,14 +192,14 @@ export class SearchResultsComponent {
   private extractYear(dateStr: string | undefined): number {
     if (!dateStr) return NaN;
     // gets last 4-digit year
-    const match = dateStr.match(/(\d{4})(?!.*\d{4})/); 
+    const match = dateStr.match(/(\d{4})(?!.*\d{4})/);
     return match ? parseInt(match[0], 10) : NaN;
   }
 
   toQueryParam(key: string): string {
     return key.toLowerCase().replace(/\s+/g, '_');
   }
-  getSearchResult(searchQuery:string,group:string| null) {
+  getSearchResult(searchQuery: string, group: string | null) {
     this.searchResult = [];
     if (this.apiSubscription) {
       this.apiSubscription.unsubscribe();
@@ -209,24 +210,24 @@ export class SearchResultsComponent {
     }).subscribe((data: any) => {
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
-      this.allResults = data.filter((item:any) => item.metadatas.knowledge_areas === group);
-      this.filterAction();  
+      this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
+      this.filterAction();
       // filtering the data based on the dept
-      if (this.loggedInUserDepartment == 'R&D' 
-      || this.loggedInUserDepartment == 'Dgt.Eng&Tst.Dev'
-      || this.loggedInUserDepartment == 'R&D Engine Dev'
-      || this.loggedInUserDepartment == 'R&D Elect&Eltro'
-      || this.loggedInUserDepartment == 'Proto Factory'
-      || this.loggedInUserDepartment == 'Veh. Engg. Dev.'
-      || this.loggedInUserDepartment == 'Vehicle Validt.'
-      || this.loggedInUserDepartment == 'Model Line Head'
-      || this.loggedInUserDepartment == 'R&D Facilty Mgt'
-      || this.loggedInUserDepartment == 'R&D Styling&Des'
-      || this.loggedInUserDepartment == 'R&D OP. EX.'
-      || this.loggedInUserDepartment == 'Inov&Upcm.Mobi.') {
+      if (this.loggedInUserDepartment == 'R&D'
+        || this.loggedInUserDepartment == 'Dgt.Eng&Tst.Dev'
+        || this.loggedInUserDepartment == 'R&D Engine Dev'
+        || this.loggedInUserDepartment == 'R&D Elect&Eltro'
+        || this.loggedInUserDepartment == 'Proto Factory'
+        || this.loggedInUserDepartment == 'Veh. Engg. Dev.'
+        || this.loggedInUserDepartment == 'Vehicle Validt.'
+        || this.loggedInUserDepartment == 'Model Line Head'
+        || this.loggedInUserDepartment == 'R&D Facilty Mgt'
+        || this.loggedInUserDepartment == 'R&D Styling&Des'
+        || this.loggedInUserDepartment == 'R&D OP. EX.'
+        || this.loggedInUserDepartment == 'Inov&Upcm.Mobi.') {
         this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
       }
-      else{
+      else {
         data = data.filter((a: any) => a.flag == 'hws')
         this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
       }
@@ -236,40 +237,40 @@ export class SearchResultsComponent {
       }
     )
   }
-  filterAction(){
+  filterAction() {
     this.initFilterGroups();
     this.restoreFiltersFromQueryParams();
     this.applyFilters();
 
   }
-  navigateToFile(filepath:any){
-    console.log(filepath,'path');
-    var location = window.location.href.toString().split("HWSext");    
-      // window.location.href = location
+  navigateToFile(filepath: any) {
+    console.log(filepath, 'path');
+    var location = window.location.href.toString().split("HWSext");
+    // window.location.href = location
     // const url1 = `https://hws.heromotocorp.com/jspui/handle/123456789/${filepath}`;
-    const url = location[0]+ "jspui/handle/123456789/" + filepath;
+    const url = location[0] + "jspui/handle/123456789/" + filepath;
     window.open(url, '_blank');
   }
 
-  search(key: any, event: any, index: number) {    
+  search(key: any, event: any, index: number) {
     let filterKey = this.filterGroups.filter(item => item.key == key);
     this.filteredSuggestions[index] = filterKey[0].values.filter(suggestion =>
       suggestion.label.toLowerCase().includes(event.query.toLowerCase())
     );
-    
+
     console.log(this.filterGroups);
     console.log(this.items)
     console.log(this.filteredSuggestions);
     console.log(this.filteredResults)
   }
 
-  handleSelect(event:any,key:any) {
+  handleSelect(event: any, key: any) {
     console.log(event);
     const queryParams: { [key: string]: any } = {};
     this.filterGroups.forEach(ele => {
-      if(ele.key == key) {
+      if (ele.key == key) {
         ele.values.forEach(data => {
-          if(data.label == event.value.label) {
+          if (data.label == event.value.label) {
             data.selected = true;
           }
         })
@@ -282,4 +283,28 @@ export class SearchResultsComponent {
     this.items.push({ value: null });
     this.filteredSuggestions.push([]);
   }
+
+  cancelSearch() {
+    this.searchQuery = '';
+    this.filteredResults = this.allResults;
+  }
+
+  getSearchedResult() {
+    let results = this.allResults.filter(item => {
+      return Object.values(item.metadatas).some((val: string) => {
+        return val.toString().toLowerCase().includes(this.searchQuery.toLowerCase())
+      }
+      );
+    });
+
+    if (results.length < 1) {
+      this.messageService.add({
+        severity: 'error', summary: 'Error',
+        detail: 'No Results found for the Searched Data', life: 2000
+      });
+    } else {
+      this.filteredResults = results;
+    }
+  }
+
 }

@@ -21,67 +21,98 @@ interface ApiItem {
 export class PtsComponent {
   filteredResults: ApiItem[] = [];
   visibleSummary = false;
-  metaData :any;
+  metaData: any;
   summaryLoading: boolean = false;
   apiSubscription: Subscription | undefined;
   loggedInUserDepartment: string | null = '';
   searchResult: any = [];
+  searchQuery: any = '';
 
-  constructor(  private sharedDataService: SharedDataService,private http: HttpClient,private messageService: MessageService) {console.log('PtsComponent constructor called');}
-  ngOnInit(){
+  allResults: ApiItem[] = [];
+  constructor(private sharedDataService: SharedDataService, private http: HttpClient, private messageService: MessageService) { console.log('PtsComponent constructor called'); }
+  ngOnInit() {
     console.log('yes')
-    const group=localStorage.getItem('searched_results')
+    const group = localStorage.getItem('searched_results')
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
-    if (searchedResult.length>0) {
+    if (searchedResult.length > 0) {
       this.filteredResults = searchedResult.filter(item => item.flag === group?.toLowerCase());
-      console.log(this.filteredResults,'all')
+      console.log(this.filteredResults, 'all')
+      this.allResults = this.filteredResults;
     } else {
-        this.getSearchResult(searchQuery,group);
-      } 
+      this.getSearchResult(searchQuery, group);
+    }
   }
 
-openSummary(item: any) {
-  console.log(item,'item')
-  this.metaData = item; 
-  this.visibleSummary = true;
-}
-
-getSearchResult(searchQuery:string,group:string| null) {
-  this.searchResult = [];
-  if (this.apiSubscription) {
-    this.apiSubscription.unsubscribe();
+  openSummary(item: any) {
+    console.log(item, 'item')
+    this.metaData = item;
+    this.visibleSummary = true;
   }
-  this.apiSubscription = this.http.post(apiUrl.searchUrl, {
-    query: searchQuery,
-    max_results: 100
-  }).subscribe((data: any) => {
-    this.sharedDataService.setQuery(searchQuery);
-    this.sharedDataService.setData(data);
-    this.filteredResults = data.filter((item:any) => item.flag === group?.toLowerCase());
-    // filtering the data based on the dept
-    if (this.loggedInUserDepartment == 'R&D' 
-    || this.loggedInUserDepartment == 'Dgt.Eng&Tst.Dev'
-    || this.loggedInUserDepartment == 'R&D Engine Dev'
-    || this.loggedInUserDepartment == 'R&D Elect&Eltro'
-    || this.loggedInUserDepartment == 'Proto Factory'
-    || this.loggedInUserDepartment == 'Veh. Engg. Dev.'
-    || this.loggedInUserDepartment == 'Vehicle Validt.'
-    || this.loggedInUserDepartment == 'Model Line Head'
-    || this.loggedInUserDepartment == 'R&D Facilty Mgt'
-    || this.loggedInUserDepartment == 'R&D Styling&Des'
-    || this.loggedInUserDepartment == 'R&D OP. EX.'
-    || this.loggedInUserDepartment == 'Inov&Upcm.Mobi.') {
-      this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
+
+  getSearchResult(searchQuery: string, group: string | null) {
+    this.searchResult = [];
+    if (this.apiSubscription) {
+      this.apiSubscription.unsubscribe();
     }
-    else{
-      data = data.filter((a: any) => a.flag == 'hws')
-      this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
+    this.apiSubscription = this.http.post(apiUrl.searchUrl, {
+      query: searchQuery,
+      max_results: 100
+    }).subscribe((data: any) => {
+      this.sharedDataService.setQuery(searchQuery);
+      this.sharedDataService.setData(data);
+      this.filteredResults = data.filter((item: any) => item.flag === group?.toLowerCase());
+      // filtering the data based on the dept
+      if (this.loggedInUserDepartment == 'R&D'
+        || this.loggedInUserDepartment == 'Dgt.Eng&Tst.Dev'
+        || this.loggedInUserDepartment == 'R&D Engine Dev'
+        || this.loggedInUserDepartment == 'R&D Elect&Eltro'
+        || this.loggedInUserDepartment == 'Proto Factory'
+        || this.loggedInUserDepartment == 'Veh. Engg. Dev.'
+        || this.loggedInUserDepartment == 'Vehicle Validt.'
+        || this.loggedInUserDepartment == 'Model Line Head'
+        || this.loggedInUserDepartment == 'R&D Facilty Mgt'
+        || this.loggedInUserDepartment == 'R&D Styling&Des'
+        || this.loggedInUserDepartment == 'R&D OP. EX.'
+        || this.loggedInUserDepartment == 'Inov&Upcm.Mobi.') {
+        this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
+      }
+      else {
+        data = data.filter((a: any) => a.flag == 'hws')
+        this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
+      }
+      this.allResults = this.filteredResults;
+    },
+      err => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 })
+      }
+    )
+  }
+
+
+  cancelSearch() {
+    this.searchQuery = '';
+    this.filteredResults = this.allResults;
+  }
+
+  getSearchedResult() {
+    let results = this.allResults.filter(item => {
+      return Object.values(item).some((val: any) => {
+        if (val != null) {
+          return val.toString().toLowerCase().includes(this.searchQuery)
+        }
+      }
+      );
+    });
+
+    if (results.length < 1) {
+      this.messageService.add({
+        severity: 'error', summary: 'Error',
+        detail: 'No Results found for the Searched Data', life: 2000
+      });
+    } else {
+      this.filteredResults = results;
     }
-  },
-    err => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 })
-    }
-  )
-}
+  }
+
 }
