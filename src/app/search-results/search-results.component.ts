@@ -5,6 +5,7 @@ import { SharedDataService } from '../services/shared-data.service';
 import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { apiUrl } from './../config/apiUrl';
+import { DynamicFilter } from '../config/dynamic-filter.constant';
 
 interface FilterItem {
   display: string;
@@ -37,17 +38,20 @@ export class SearchResultsComponent {
   filteredSuggestions: any[] = [[]];
   allResults: ApiItem[] = [];
   filteredResults: ApiItem[] = [];
-  filterKeys = [{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
-  { display: 'Department', keyValue: 'department' },
-  { display: 'Publish Date', keyValue: 'publish_date', isRange: true },
-  { display: 'Project Code', keyValue: 'project_code' },
-  { display: 'MLH', keyValue: 'mlh_category' },
-  { display: 'Author', keyValue: 'author' }]
+  // filterKeys = [{ display: 'Knowledge Areas', keyValue: 'knowledge_areas' },
+  // { display: 'Department', keyValue: 'department' },
+  // { display: 'Publish Date', keyValue: 'publish_date', isRange: true },
+  // { display: 'Project Code', keyValue: 'project_code' },
+  // { display: 'MLH', keyValue: 'mlh_category' },
+  // { display: 'Author', keyValue: 'author' }]
+  filterKeys: any[] = [];
   filterGroups: FilterItem[] = [];
   searchResult: any = [];
   apiSubscription: Subscription | undefined;
   loggedInUserDepartment: string | null = '';
   currentYear = new Date().getFullYear();
+  dynamicFilter: any = {};
+  loading: boolean = false;
 
 
   constructor(private route: ActivatedRoute, private router: Router,
@@ -58,6 +62,7 @@ export class SearchResultsComponent {
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
     if (searchedResult.length > 0) {
+      this.getDynamicFilter(group || undefined);
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
@@ -200,6 +205,7 @@ export class SearchResultsComponent {
     return key.toLowerCase().replace(/\s+/g, '_');
   }
   getSearchResult(searchQuery: string, group: string | null) {
+    this.loading = true;
     this.searchResult = [];
     if (this.apiSubscription) {
       this.apiSubscription.unsubscribe();
@@ -208,9 +214,13 @@ export class SearchResultsComponent {
       query: searchQuery,
       max_results: 100
     }).subscribe((data: any) => {
+       this.loading = false;
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
       this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
+      if (this.allResults.length > 0) {
+        this.getDynamicFilter(group || undefined);
+      }
       this.filterAction();
       // filtering the data based on the dept
       if (this.loggedInUserDepartment == 'R&D'
@@ -233,7 +243,8 @@ export class SearchResultsComponent {
       }
     },
       err => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 })
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 });
+        this.loading = false;
       }
     )
   }
@@ -306,5 +317,37 @@ export class SearchResultsComponent {
       this.filteredResults = results;
     }
   }
+  getDynamicFilter(group?: string) {
+    // this.http.get(apiUrl.dynamicFilterUrl).subscribe({
+    //   next: (res) => {
+    //   console.log(res, 'res');
+    // },
+    //   error: (err) => {
+    //     this.messageService.add({
+    //       severity: 'error',
+    //       summary: 'Error',
+    //       detail: 'Unable to fetch the Dynamic Filter data. Please try after some time.',
+    //       life: 2000
+    //     });
+    //   }
+    // });
+    this.dynamicFilter = DynamicFilter;
+    console.log(this.dynamicFilter, 'dynamicFilter');
 
+    if (this.dynamicFilter) {
+      const selectedDynamicfilter = Object.keys(this.dynamicFilter).find(key =>
+        key.toLowerCase().replace(/\s+/g, '') === group?.toLowerCase().replace(/\s+/g, '')
+      ) || '';
+
+      const filtersForSelectedGroup = this.dynamicFilter[selectedDynamicfilter] || [];
+      this.filterKeys = filtersForSelectedGroup.map((f: any) => ({
+        display: f,
+        keyValue: f.toLowerCase().includes('date')
+          ? 'publish_date'
+          : f.toLowerCase().replace(/\s+/g, '_'),
+        ...(f.toLowerCase().includes('date') ? { isRange: true } : {})
+      }));
+      console.log(this.filterKeys, 'filterKeys');
+    }
+  }
 }

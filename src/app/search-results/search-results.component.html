@@ -41,7 +41,7 @@
         </ng-template>
       </div>
     </div>
-    <button class="reset-btn" pButton type="button" label="Reset Filters" (click)="resetFilters()"></button>
+    <button *ngIf="filterGroups.length>0" class="reset-btn" pButton type="button" label="Reset Filters" (click)="resetFilters()"></button>
   </div>
 
   <!-- Right Panel (Cards) -->
@@ -60,6 +60,9 @@
       </button>
 
     </div>
+     <div *ngIf="loading;" class="loader-pos">
+        <span class="loader"></span>                
+     </div>
     <div class="searchResults">
       <div class="result-item" *ngFor="let item of filteredResults">
       <div class="result-title-section">
