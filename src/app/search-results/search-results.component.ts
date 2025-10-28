@@ -318,7 +318,8 @@ export class SearchResultsComponent {
     }
   }
   getDynamicFilter(group?: string) {
-    // this.http.get(apiUrl.dynamicFilterUrl).subscribe({
+    // if (!group) return;
+    // this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
     //   next: (res) => {
     //   console.log(res, 'res');
     // },
@@ -332,20 +333,13 @@ export class SearchResultsComponent {
     //   }
     // });
     this.dynamicFilter = DynamicFilter;
-    console.log(this.dynamicFilter, 'dynamicFilter');
-
     if (this.dynamicFilter) {
-      const selectedDynamicfilter = Object.keys(this.dynamicFilter).find(key =>
-        key.toLowerCase().replace(/\s+/g, '') === group?.toLowerCase().replace(/\s+/g, '')
-      ) || '';
-
-      const filtersForSelectedGroup = this.dynamicFilter[selectedDynamicfilter] || [];
-      this.filterKeys = filtersForSelectedGroup.map((f: any) => ({
-        display: f,
-        keyValue: f.toLowerCase().includes('date')
-          ? 'publish_date'
-          : f.toLowerCase().replace(/\s+/g, '_'),
-        ...(f.toLowerCase().includes('date') ? { isRange: true } : {})
+      const filtersForSelectedGroup = Object.values(this.dynamicFilter)[0]||'';
+      this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+        display: displayValue,
+        keyValue: key,
+        ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+         
       }));
       console.log(this.filterKeys, 'filterKeys');
     }
