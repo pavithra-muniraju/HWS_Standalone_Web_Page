@@ -76,11 +76,23 @@
         
 //     ]
 {
-    "Leason Learnt Display Name": {
-        "author": "Author",
-        "department": "Department",
-        "sub-department": "Sub Department",
-        "project_code": "Project Code",
-        "publish_date": "Publish Date"
+    "lessonslearned": {
+        "lessonslearned_issuesource": "Issue Source",
+        "lessonslearned_mlhcategory": "MLH Category",
+        "lessonslearned_projectcode": "Project Code",
+        "lessonslearned_reportedstage": "Reported Stage"
+    },
+    "designguidelines": {},
+    "qalessonslearned": {},
+    "npdprocesses": {
+        "npdprocesses_title": "Document Title"
+    },
+    "teststandard": {
+        "teststandard_unit": "Functional Performance"
+    },
+    "projectgold": {
+        "projectgold_title": "Title",
+        "projectgold_Country": "Country Name",
+        "projectgold_Date": "Report Date"
     }
 }

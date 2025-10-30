@@ -59,6 +59,8 @@ export class SearchResultsComponent {
     private messageService: MessageService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
+    this.getDynamicFilter(group || undefined);
+    this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
     if (searchedResult.length > 0) {
@@ -138,6 +140,7 @@ export class SearchResultsComponent {
         return selected.includes(itemValue);
       })
     });
+    
     const publishDateGroup = this.filterGroups.find(g => g.isRange);
     if (publishDateGroup) {
       publishDateGroup.count = this.filteredResults.filter(item => {
@@ -205,6 +208,7 @@ export class SearchResultsComponent {
     return key.toLowerCase().replace(/\s+/g, '_');
   }
   getSearchResult(searchQuery: string, group: string | null) {
+    this.getDynamicFilter(group || undefined);
     this.loading = true;
     this.searchResult = [];
     if (this.apiSubscription) {
@@ -214,7 +218,7 @@ export class SearchResultsComponent {
       query: searchQuery,
       max_results: 100
     }).subscribe((data: any) => {
-       this.loading = false;
+      this.loading = false;
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
       this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
@@ -322,6 +326,18 @@ export class SearchResultsComponent {
     // this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
     //   next: (res) => {
     //   console.log(res, 'res');
+    //   this.dynamicFilter = res;
+    //   if (this.dynamicFilter) {
+    //     const filtersForSelectedGroup = Object.values(this.dynamicFilter)[0]||'';
+    //     this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+    //       display: displayValue,
+    //       keyValue: key,
+    //       ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+
+    //     }));
+    //     console.log(this.filterKeys, 'filterKeys');
+    //     this.cdr.detectChanges();
+    //   }
     // },
     //   error: (err) => {
     //     this.messageService.add({
@@ -334,14 +350,17 @@ export class SearchResultsComponent {
     // });
     this.dynamicFilter = DynamicFilter;
     if (this.dynamicFilter) {
-      const filtersForSelectedGroup = Object.values(this.dynamicFilter)[0]||'';
+      if(group != undefined) {              
+      
+      const filtersForSelectedGroup = this.dynamicFilter[group] || '';
       this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
         display: displayValue,
         keyValue: key,
         ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
-         
+
       }));
       console.log(this.filterKeys, 'filterKeys');
-    }
+      this.cdr.detectChanges();
+    } }
   }
 }
