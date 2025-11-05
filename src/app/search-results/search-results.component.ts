@@ -59,12 +59,12 @@ export class SearchResultsComponent {
     private messageService: MessageService, private cdr: ChangeDetectorRef) { }
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
-    this.getDynamicFilter(group || undefined);
+    this.getDynamicFilter(group);
     this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
     if (searchedResult.length > 0) {
-      this.getDynamicFilter(group || undefined);
+      // this.getDynamicFilter(group);
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
@@ -78,8 +78,13 @@ export class SearchResultsComponent {
   }
 
   initFilterGroups(): void {
+   
     this.filterGroups = this.filterKeys.map(keyObj => {
       if (keyObj.isRange) {
+        const validDateCount = this.allResults.filter(item =>
+          item.metadatas?.[(keyObj.keyValue).toLowerCase()] !== 'nan'
+        ).length;
+
         return {
           display: keyObj.display,
           key: keyObj.keyValue,
@@ -88,7 +93,7 @@ export class SearchResultsComponent {
           max: this.currentYear,
           range: [1950, this.currentYear],
           values: [],
-          count: this.allResults.length
+          count: validDateCount
         };
       }
       const counts: { [label: string]: number } = {};
@@ -131,8 +136,16 @@ export class SearchResultsComponent {
     this.filteredResults = this.allResults.filter(item => {
       return this.filterGroups.every(group => {
         if (group.isRange && group.range) {
-          const year = this.extractYear(item.metadatas?.[group.key]);
-          return !isNaN(year) && year >= group.range[0] && year <= group.range[1];
+          if(item.metadatas?.[group.key] != "nan") {
+            const year = this.extractYear(item.metadatas?.[group.key]);
+            if (group.range[0] === 1950 && group.range[1] === this.currentYear) {
+
+              return true; 
+      
+            }
+            return !isNaN(year) && year >= group.range[0] && year <= group.range[1];
+          } 
+          
         }
         const selected = group.values.filter(v => v.selected).map(v => v.label);
         if (selected.length === 0) return true;
@@ -144,10 +157,13 @@ export class SearchResultsComponent {
     const publishDateGroup = this.filterGroups.find(g => g.isRange);
     if (publishDateGroup) {
       publishDateGroup.count = this.filteredResults.filter(item => {
-        const year = this.extractYear(item.metadatas?.[publishDateGroup.key]);
-        return !isNaN(year) && year >= publishDateGroup.range![0] && year <= publishDateGroup.range![1];
-      }).length
+        // if(item.metadatas?.[publishDateGroup.key] != "nan") {
+          const year = this.extractYear(item.metadatas?.[publishDateGroup.key]);
+          return !isNaN(year) && year >= publishDateGroup.range![0] && year <= publishDateGroup.range![1];
+        
+        }).length
     }
+    console.log(this.filteredResults)
   }
   onFilterChange(): void {
     this.items = [];
@@ -208,7 +224,7 @@ export class SearchResultsComponent {
     return key.toLowerCase().replace(/\s+/g, '_');
   }
   getSearchResult(searchQuery: string, group: string | null) {
-    this.getDynamicFilter(group || undefined);
+    this.getDynamicFilter(group);
     this.loading = true;
     this.searchResult = [];
     if (this.apiSubscription) {
@@ -222,9 +238,9 @@ export class SearchResultsComponent {
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
       this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
-      if (this.allResults.length > 0) {
-        this.getDynamicFilter(group || undefined);
-      }
+      // if (this.allResults.length > 0) {
+      //   this.getDynamicFilter(group);
+      // }
       this.filterAction();
       // filtering the data based on the dept
       if (this.loggedInUserDepartment == 'R&D'
@@ -321,46 +337,51 @@ export class SearchResultsComponent {
       this.filteredResults = results;
     }
   }
-  getDynamicFilter(group?: string) {
-    // if (!group) return;
-    // this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
-    //   next: (res) => {
-    //   console.log(res, 'res');
-    //   this.dynamicFilter = res;
-    //   if (this.dynamicFilter) {
-    //     const filtersForSelectedGroup = Object.values(this.dynamicFilter)[0]||'';
-    //     this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
-    //       display: displayValue,
-    //       keyValue: key,
-    //       ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
-
-    //     }));
-    //     console.log(this.filterKeys, 'filterKeys');
-    //     this.cdr.detectChanges();
-    //   }
-    // },
-    //   error: (err) => {
-    //     this.messageService.add({
-    //       severity: 'error',
-    //       summary: 'Error',
-    //       detail: 'Unable to fetch the Dynamic Filter data. Please try after some time.',
-    //       life: 2000
-    //     });
-    //   }
-    // });
-    this.dynamicFilter = DynamicFilter;
-    if (this.dynamicFilter) {
-      if(group != undefined) {              
+  getDynamicFilter(group?: any) {
+    if (!group) return;
+    this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
+      next: (res) => {
+      console.log(res, 'res');
+      this.dynamicFilter = res;
+      if (this.dynamicFilter) {
+        if(group != undefined) {              
+        
+        const filtersForSelectedGroup = this.dynamicFilter[group] || '';
+        this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+          display: displayValue,
+          keyValue: key.toLowerCase(),
+          ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+  
+        }));
+        console.log(this.filterKeys, 'filterKeys');
+        this.initFilterGroups();
+        this.cdr.detectChanges();
+      } }
+    },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Unable to fetch the Dynamic Filter data. Please try after some time.',
+          life: 2000
+        });
+      }
+    });
+    console.log(this.filteredResults)
+    // this.dynamicFilter = DynamicFilter;
+    // if (this.dynamicFilter) {
+    //   if(group != undefined) {              
       
-      const filtersForSelectedGroup = this.dynamicFilter[group] || '';
-      this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
-        display: displayValue,
-        keyValue: key,
-        ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+    //   const filtersForSelectedGroup = this.dynamicFilter[group] || '';
+    //   this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+    //     display: displayValue,
+    //     keyValue: key.toLowerCase(),
+    //     ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
 
-      }));
-      console.log(this.filterKeys, 'filterKeys');
-      this.cdr.detectChanges();
-    } }
+    //   }));
+    //   console.log(this.filterKeys, 'filterKeys');
+    //   this.initFilterGroups();
+    //   this.cdr.detectChanges();
+    // } }
   }
 }
