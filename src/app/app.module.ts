@@ -21,7 +21,7 @@ import { ButtonModule } from 'primeng/button';
 import {SliderModule} from 'primeng/slider';
 import { PtsComponent } from './search-results/pts/pts.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-
+import { InputTextareaModule } from 'primeng/inputtextarea';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +46,8 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     AppRoutingModule,
     ButtonModule,
     SliderModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    InputTextareaModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

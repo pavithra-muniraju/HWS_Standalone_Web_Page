@@ -77,13 +77,45 @@
         <span *ngIf="item.filename?.endsWith('.pdf')"><i class="fa-solid fa-file-pdf"></i></span>
       </div>
       <div class="result-bottom-row">
+        <div class="actions">
+          <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like" (click)="item.liked=!item.liked"></i>
+          <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons" title="Dislike" (click)="item.disliked=!item.disliked"></i>
+          <i [ngClass]="item.comment? 'fa-solid fa-comment' : 'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)"></i>
+        </div>
         <p class="result-desc" [title]="item.metadatas['sub_department']">{{item.metadatas['sub_department'] }}</p>
         <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
       </div>
+
+      
     </div>
     </div>
     
   </div>
 </div>
 
+
+<p-dialog header="Comments Section" [(visible)]="addOrShowComments" [modal]="true" [closable]="true"
+  [style]="{ width: '400px' }">
+
+  <div class="p-fluid">
+    <div class="p-field">
+      <textarea 
+        id="comment" 
+        pInputTextarea 
+        rows="3"
+        [(ngModel)]="selectedItem.comment"
+        placeholder="Write your comment...">
+      </textarea>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+     <button class="read-now-btn cancel" (click)="cancelComment()">
+      <i class="fas fa-times"></i>   Cancel</button>
+     <button class="read-now-btn cancel submit" (click)="submitComment()">
+        <i class="fa fa-check"></i>  Submit</button>
+    
+  </ng-template>
+
+</p-dialog>
 <p-toast></p-toast>

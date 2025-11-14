@@ -217,3 +217,23 @@
   justify-content: center;
   align-items: center;
 }
+
+.actions {
+  margin-top: 2px;
+}
+
+.icons {
+  font-size: 16px;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+
+.cancel {
+    background-color: white;
+    color: red;
+    border-color: white;
+    font-weight: bold;
+}
+.submit {
+  color: #343a40 !important;
+}

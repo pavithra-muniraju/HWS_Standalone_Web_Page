@@ -24,6 +24,9 @@ interface ApiItem {
   filepath?: string;
   filename?: string;
   metadatas: { [key: string]: string };
+  liked: boolean;
+  disliked: boolean;
+  comment: string
 }
 @Component({
   selector: 'app-search-results',
@@ -53,7 +56,11 @@ export class SearchResultsComponent {
   dynamicFilter: any = {};
   loading: boolean = false;
 
-
+  addOrShowComments = false;
+  selectedItem:any = {
+    comment: ''
+  };
+  
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
     private messageService: MessageService, private cdr: ChangeDetectorRef) { }
@@ -66,6 +73,11 @@ export class SearchResultsComponent {
     if (searchedResult.length > 0) {
       // this.getDynamicFilter(group);
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
+      this.allResults.forEach(item => {
+        item.liked = false;
+        item.disliked = false;
+        item.comment = ''
+      })
       this.initFilterGroups();
       this.restoreFiltersFromQueryParams();
       this.applyFilters();
@@ -78,7 +90,7 @@ export class SearchResultsComponent {
   }
 
   initFilterGroups(): void {
-   
+
     this.filterGroups = this.filterKeys.map(keyObj => {
       if (keyObj.isRange) {
         const validDateCount = this.allResults.filter(item =>
@@ -136,16 +148,16 @@ export class SearchResultsComponent {
     this.filteredResults = this.allResults.filter(item => {
       return this.filterGroups.every(group => {
         if (group.isRange && group.range) {
-          if(item.metadatas?.[group.key] != "nan") {
+          if (item.metadatas?.[group.key] != "nan") {
             const year = this.extractYear(item.metadatas?.[group.key]);
             if (group.range[0] === 1950 && group.range[1] === this.currentYear) {
 
-              return true; 
-      
+              return true;
+
             }
             return !isNaN(year) && year >= group.range[0] && year <= group.range[1];
-          } 
-          
+          }
+
         }
         const selected = group.values.filter(v => v.selected).map(v => v.label);
         if (selected.length === 0) return true;
@@ -153,15 +165,15 @@ export class SearchResultsComponent {
         return selected.includes(itemValue);
       })
     });
-    
+
     const publishDateGroup = this.filterGroups.find(g => g.isRange);
     if (publishDateGroup) {
       publishDateGroup.count = this.filteredResults.filter(item => {
         // if(item.metadatas?.[publishDateGroup.key] != "nan") {
-          const year = this.extractYear(item.metadatas?.[publishDateGroup.key]);
-          return !isNaN(year) && year >= publishDateGroup.range![0] && year <= publishDateGroup.range![1];
-        
-        }).length
+        const year = this.extractYear(item.metadatas?.[publishDateGroup.key]);
+        return !isNaN(year) && year >= publishDateGroup.range![0] && year <= publishDateGroup.range![1];
+
+      }).length
     }
     console.log(this.filteredResults)
   }
@@ -238,9 +250,16 @@ export class SearchResultsComponent {
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
       this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
-      // if (this.allResults.length > 0) {
-      //   this.getDynamicFilter(group);
-      // }
+      const key = 'filepath';
+      this.allResults = [...new Map(this.allResults.map((item: any) =>
+        [item[key], item])).values()];
+      this.allResults.forEach(item => {
+        item.liked = false;
+        item.disliked = false;
+        item.comment = ''
+      })
+      console.log(this.allResults)
+
       this.filterAction();
       // filtering the data based on the dept
       if (this.loggedInUserDepartment == 'R&D'
@@ -341,23 +360,24 @@ export class SearchResultsComponent {
     if (!group) return;
     this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
       next: (res) => {
-      console.log(res, 'res');
-      this.dynamicFilter = res;
-      if (this.dynamicFilter) {
-        if(group != undefined) {              
-        
-        const filtersForSelectedGroup = this.dynamicFilter[group] || '';
-        this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
-          display: displayValue,
-          keyValue: key.toLowerCase(),
-          ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
-  
-        }));
-        console.log(this.filterKeys, 'filterKeys');
-        this.initFilterGroups();
-        this.cdr.detectChanges();
-      } }
-    },
+        console.log(res, 'res');
+        this.dynamicFilter = res;
+        if (this.dynamicFilter) {
+          if (group != undefined) {
+
+            const filtersForSelectedGroup = this.dynamicFilter[group] || '';
+            this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+              display: displayValue,
+              keyValue: key.toLowerCase(),
+              ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+
+            }));
+            console.log(this.filterKeys, 'filterKeys');
+            this.initFilterGroups();
+            this.cdr.detectChanges();
+          }
+        }
+      },
       error: (err) => {
         this.messageService.add({
           severity: 'error',
@@ -371,7 +391,7 @@ export class SearchResultsComponent {
     // this.dynamicFilter = DynamicFilter;
     // if (this.dynamicFilter) {
     //   if(group != undefined) {              
-      
+
     //   const filtersForSelectedGroup = this.dynamicFilter[group] || '';
     //   this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
     //     display: displayValue,
@@ -383,5 +403,36 @@ export class SearchResultsComponent {
     //   this.initFilterGroups();
     //   this.cdr.detectChanges();
     // } }
+  }
+
+  showDialog(item?:any) {
+    if(item) {
+this.selectedItem = item;
+    }
+    
+    this.addOrShowComments = !this.addOrShowComments;
+  }
+  cancelComment() {
+    this.selectedItem.comment = ''
+    this.addOrShowComments = !this.addOrShowComments;
+  }
+    submitComment() {
+    if (!this.selectedItem.comment.trim()) {
+      this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Comments cannot be empty',
+          life: 2000
+        });
+      return;
+    }
+
+    console.log("Comment submitted:", this.selectedItem.comment);
+
+    // TODO: send to backend
+    // this.commentService.addComment(this.commentText).subscribe(...)
+
+    // this.commentText = "";
+   this.addOrShowComments = !this.addOrShowComments;
   }
 }
