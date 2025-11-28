@@ -161,11 +161,11 @@ input:focus {
         transform: rotate(360deg);
     }
 }
- 
+/*  
 ::ng-deep .p-dialog .p-dialog-header {
     padding: 0;
     background: #DAE0E9;
-}
+} */
  
 ::ng-deep .p-icon {
     height: 12px;
@@ -176,12 +176,12 @@ input:focus {
     font-family: Segoeui-Normal;
 }
  
-::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
+/* ::ng-deep .p-dialog .p-dialog-header .p-dialog-title {
     padding: 0 10px;
     font-weight: normal;
     font-size: 14px;
     text-decoration: underline;
-}
+} */
  
 .doc-icons {
     display: flex;

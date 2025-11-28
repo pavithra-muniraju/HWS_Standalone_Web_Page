@@ -26,12 +26,26 @@
         <div class="searchResults">
             <div class="result-item" *ngFor="let item of filteredResults">
                 <div class="result-title-section">
-                    <div class="result-title">{{ item.issue_title }}</div>
-                    <span class="result-title">{{item.metadatas?.['Severity']}}</span>
+                    <div class="result-title">{{ item.metadatas?.['issue_title'] }}</div>
+                    <span class="result-title">{{item.metadatas?.['severity']}}</span>
                     <!-- <i [ngClass]="item.metadatas?.['Issue Progress'] ? 'fas fa-circle' : 'far fa-circle'" class="progress-icon" [style.color]="item.metadatas?.['Issue Progress']"></i> -->
                 </div>
                 <div class="result-bottom-row">
-                    <p class="result-desc" [title]="item.issue_title">{{ item.issue_description }}</p>
+                    <div class="actions">
+            <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like"
+              (click)="item.liked=!item.liked;likeOrDislikeItem(item, 'like')">
+            <span class="count" *ngIf="isLoggedInAdmin">{{item.likesCount}}</span>
+            </i> 
+             
+            <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
+              title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
+            <span class="count" *ngIf="isLoggedInAdmin">{{item.dislikesCount}}</span></i>
+            <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment"
+              (click)="showDialog(item)">
+            </i>
+          </div>
+
+                    <!-- <p class="result-desc" [title]="item.issue_title">{{ item.metadatas?.['issue_description'] }}</p> -->
                     <button class="read-now-btn" (click)="openSummary(item)">Read Now</button>
                 </div>
             </div>
@@ -45,62 +59,94 @@
     <div class="info-container">
         <div class="info-row">
             <div class="info-label">PTS NO</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Object'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['object'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Model Code</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Model Code'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['model_code'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Issue Title</div>
-            <div class="info-value">{{ metaData?.['issue_title'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['issue_title'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Issue Description</div>
-            <div class="info-value">{{ metaData?.['issue_description'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['issue_description'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Part No</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Part Number'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['part_number'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Part Name</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Part Name'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['part_name'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Event</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Event'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['event'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Date of Initiation</div>
-            <div class="info-value">{{ metaData?.['request_date'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['request_date'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Initiator Department</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Initiator Dept'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['initiator_dept'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Severity</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Severity'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['severity'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Root Cause Description</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Root Cause Description'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['root_cause_description'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Countermesure Details</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Countermeasure Details'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['countermeasure_details'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Solver Group</div>
-            <div class="info-value">{{ metaData?.metadatas?.['Solver Group'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['solver_group'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Designer Group</div>
-            <div class="info-value">{{ metaData?.['design_group'] }}</div>
+            <div class="info-value">{{ metaData?.metadatas?.['design_group'] }}</div>
         </div>
     </div>
 
+
+</p-dialog>
+
+<p-dialog header="Comments Section" [(visible)]="addOrShowCommentsAdmin" [modal]="true" [closable]="true"
+  [style]="{ width: '800px' }">
+
+  <div class="p-fluid" style="padding-top: 10px;">
+    <div class="p-field">
+      <textarea id="comment" pInputTextarea rows="3" [(ngModel)]="selectedItem.comment"
+        placeholder="Write your comment...">
+      </textarea>
+    </div>
+  </div>
+
+  <div class="commentsList">
+    <div *ngFor="let comment of commentsList" class="commentItem">
+      <div class="commentHeader">
+        <span class="commentAuthor">{{ comment.email }}</span>
+        <span class="commentDate">{{ comment.createdAt | date:'short' }}</span>
+      </div>
+      <div class="commentBody">
+        {{ comment.comment }}
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button class="read-now-btn cancel" (click)="cancelComment();addOrShowCommentsAdmin=false">
+      <i class="fas fa-times"></i> Cancel</button>
+    <button class="read-now-btn cancel submit" (click)="submitComment()">
+      <i class="fa fa-check"></i> Submit</button>
+
+  </ng-template>
 
 </p-dialog>
 

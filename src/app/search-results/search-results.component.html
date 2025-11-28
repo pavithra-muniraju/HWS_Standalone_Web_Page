@@ -30,6 +30,7 @@
               [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
             </p-checkbox>
           </div>
+          <!-- {{items | json}} -->
           <div *ngFor="let item of items; let i = index">
 
             <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]"
@@ -41,7 +42,8 @@
         </ng-template>
       </div>
     </div>
-    <button *ngIf="filterGroups.length>0" class="reset-btn" pButton type="button" label="Reset Filters" (click)="resetFilters()"></button>
+    <button *ngIf="filterGroups.length>0" class="reset-btn" pButton type="button" label="Reset Filters"
+      (click)="resetFilters()"></button>
   </div>
 
   <!-- Right Panel (Cards) -->
@@ -55,67 +57,104 @@
         <img class="cancel-btn" src="./assets/cancel.png" (click)="cancelSearch()" />
       </div>
       <!-- -->
-      <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())" 
-      >Search
+      <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
 
     </div>
-     <div *ngIf="loading;" class="loader-pos">
-        <span class="loader"></span>                
-     </div>
+    <div *ngIf="loading;" class="loader-pos">
+      <span class="loader"></span>
+    </div>
     <div class="searchResults">
       <div class="result-item" *ngFor="let item of filteredResults">
-      <div class="result-title-section">
-        <div class="result-title">{{ item.metadatas['title'] }}</div>
-        <span *ngIf="item.filename?.endsWith('.xlsx') || item.filename?.endsWith('.xls')"><i
-            class="fa-solid fa-file-excel"></i></span>
-        <span *ngIf="item.filename?.endsWith('.doc') || item.filename?.endsWith('.docx')"><i
-            class="fa-solid fa-file-word"></i></span>
-        <span
-          *ngIf="item.filename?.endsWith('.png') || item.filename?.endsWith('.jpg') || item.filename?.endsWith('.jpeg')"><i
-            class="fa-solid fa-image"></i></span>
-        <span *ngIf="item.filename?.endsWith('.pdf')"><i class="fa-solid fa-file-pdf"></i></span>
-      </div>
-      <div class="result-bottom-row">
-        <div class="actions">
-          <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like" (click)="item.liked=!item.liked"></i>
-          <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons" title="Dislike" (click)="item.disliked=!item.disliked"></i>
-          <i [ngClass]="item.comment? 'fa-solid fa-comment' : 'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)"></i>
+        <div class="result-title-section">
+          <div class="result-title">{{ item.metadatas['title'] }}</div>
+          <span *ngIf="item.filename?.endsWith('.xlsx') || item.filename?.endsWith('.xls')"><i
+              class="fa-solid fa-file-excel"></i></span>
+          <span *ngIf="item.filename?.endsWith('.doc') || item.filename?.endsWith('.docx')"><i
+              class="fa-solid fa-file-word"></i></span>
+          <span
+            *ngIf="item.filename?.endsWith('.png') || item.filename?.endsWith('.jpg') || item.filename?.endsWith('.jpeg')"><i
+              class="fa-solid fa-image"></i></span>
+          <span *ngIf="item.filename?.endsWith('.pdf')"><i class="fa-solid fa-file-pdf"></i></span>
         </div>
-        <p class="result-desc" [title]="item.metadatas['sub_department']">{{item.metadatas['sub_department'] }}</p>
-        <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
-      </div>
+        <div class="result-bottom-row">
+          <div class="actions">
+            <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like"
+              (click)="item.liked=!item.liked;likeOrDislikeItem(item, 'like')">
+            <span class="count" *ngIf="isLoggedInAdmin">{{item.likesCount}}</span>
+            </i> 
+             
+            <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
+              title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
+            <span class="count" *ngIf="isLoggedInAdmin">{{item.dislikesCount}}</span></i>
+            <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment"
+              (click)="showDialog(item)">
+            </i>
+          </div>
+          
+          <!-- <p class="result-desc" [title]="item.metadatas['sub_department']">{{item.metadatas['sub_department'] }}</p> -->
+          <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
+        </div>
 
-      
+
+      </div>
     </div>
-    </div>
-    
+
   </div>
 </div>
 
 
-<p-dialog header="Comments Section" [(visible)]="addOrShowComments" [modal]="true" [closable]="true"
+<p-dialog header="Add Comments" [(visible)]="addOrShowCommentsUser" [modal]="true" [closable]="true"
   [style]="{ width: '400px' }">
 
-  <div class="p-fluid">
+  <div class="p-fluid" style="padding-top: 10px;">
     <div class="p-field">
-      <textarea 
-        id="comment" 
-        pInputTextarea 
-        rows="3"
-        [(ngModel)]="selectedItem.comment"
+      <textarea id="comment" pInputTextarea rows="3" [(ngModel)]="selectedItem.comment"
         placeholder="Write your comment...">
       </textarea>
     </div>
   </div>
 
   <ng-template pTemplate="footer">
-     <button class="read-now-btn cancel" (click)="cancelComment()">
-      <i class="fas fa-times"></i>   Cancel</button>
-     <button class="read-now-btn cancel submit" (click)="submitComment()">
-        <i class="fa fa-check"></i>  Submit</button>
-    
+    <button class="read-now-btn cancel" (click)="cancelComment();addOrShowCommentsUser=false">
+      <i class="fas fa-times"></i> Cancel</button>
+    <button class="read-now-btn cancel submit" (click)="submitComment()">
+      <i class="fa fa-check"></i> Submit</button>
+
   </ng-template>
 
 </p-dialog>
+
+<p-dialog header="Comments Section" [(visible)]="addOrShowCommentsAdmin" [modal]="true" [closable]="true"
+  [style]="{ width: '800px' }">
+
+  <div class="p-fluid" style="padding-top: 10px;">
+    <div class="p-field">
+      <textarea id="comment" pInputTextarea rows="3" [(ngModel)]="selectedItem.comment"
+        placeholder="Write your comment...">
+      </textarea>
+    </div>
+  </div>
+
+  <div class="commentsList">
+    <div *ngFor="let comment of commentsList" class="commentItem">
+      <div class="commentHeader">
+        <span class="commentAuthor">{{ comment.email }}</span>
+        <span class="commentDate">{{ comment.createdAt | date:'short' }}</span>
+      </div>
+      <div class="commentBody">
+        {{ comment.comment }}
+      </div>
+    </div>
+  </div>
+  <ng-template pTemplate="footer">
+    <button class="read-now-btn cancel" (click)="cancelComment();addOrShowCommentsAdmin=false">
+      <i class="fas fa-times"></i> Cancel</button>
+    <button class="read-now-btn cancel submit" (click)="submitComment()">
+      <i class="fa fa-check"></i> Submit</button>
+
+  </ng-template>
+
+</p-dialog>
+
 <p-toast></p-toast>

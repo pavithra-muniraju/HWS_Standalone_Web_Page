@@ -26,7 +26,9 @@ interface ApiItem {
   metadatas: { [key: string]: string };
   liked: boolean;
   disliked: boolean;
-  comment: string
+  comment: string;
+  likesCount: number;
+  dislikesCount: number;
 }
 @Component({
   selector: 'app-search-results',
@@ -56,11 +58,15 @@ export class SearchResultsComponent {
   dynamicFilter: any = {};
   loading: boolean = false;
 
-  addOrShowComments = false;
-  selectedItem:any = {
+  isLoggedInAdmin = false;
+  addOrShowCommentsUser = false;
+  addOrShowCommentsAdmin = false;
+
+  commentsList: any[] = []
+  selectedItem: any = {
     comment: ''
   };
-  
+
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
     private messageService: MessageService, private cdr: ChangeDetectorRef) { }
@@ -70,17 +76,12 @@ export class SearchResultsComponent {
     this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
+    this.checkAdminLogin();
     if (searchedResult.length > 0) {
       // this.getDynamicFilter(group);
       this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
-      this.allResults.forEach(item => {
-        item.liked = false;
-        item.disliked = false;
-        item.comment = ''
-      })
-      this.initFilterGroups();
-      this.restoreFiltersFromQueryParams();
-      this.applyFilters();
+      this.getAllReactions();
+      
     } else {
       if (searchQuery) {
         this.getSearchResult(searchQuery, group);
@@ -140,8 +141,10 @@ export class SearchResultsComponent {
         const selected = queryParams.getAll(this.toQueryParam(group.key));
         group.values.forEach(v => (v.selected = selected.includes(v.label)));
       }
+      console.log(group.key, 'group key');
       this.items.push({ value: null, key: group.key });
     });
+    console.log(this.items, 'items');
   }
 
   applyFilters(): void {
@@ -244,7 +247,7 @@ export class SearchResultsComponent {
     }
     this.apiSubscription = this.http.post(apiUrl.searchUrl, {
       query: searchQuery,
-      max_results: 100
+      // max_results: 100
     }).subscribe((data: any) => {
       this.loading = false;
       this.sharedDataService.setQuery(searchQuery);
@@ -253,11 +256,7 @@ export class SearchResultsComponent {
       const key = 'filepath';
       this.allResults = [...new Map(this.allResults.map((item: any) =>
         [item[key], item])).values()];
-      this.allResults.forEach(item => {
-        item.liked = false;
-        item.disliked = false;
-        item.comment = ''
-      })
+      this.getAllReactions();
       console.log(this.allResults)
 
       this.filterAction();
@@ -360,23 +359,26 @@ export class SearchResultsComponent {
     if (!group) return;
     this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
       next: (res) => {
-        console.log(res, 'res');
-        this.dynamicFilter = res;
-        if (this.dynamicFilter) {
-          if (group != undefined) {
+    // let res = { "npdprocesses": { "npdprocesses_title": "Document Title" } }
+    console.log(res, 'res');
+    this.dynamicFilter = res;
+    if (this.dynamicFilter) {
+      if (group != undefined) {
 
-            const filtersForSelectedGroup = this.dynamicFilter[group] || '';
-            this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
-              display: displayValue,
-              keyValue: key.toLowerCase(),
-              ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+        const filtersForSelectedGroup = this.dynamicFilter[group] || '';
+        this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+          display: displayValue,
+          keyValue: key.toLowerCase(),
+          ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
 
-            }));
-            console.log(this.filterKeys, 'filterKeys');
-            this.initFilterGroups();
-            this.cdr.detectChanges();
-          }
-        }
+        }));
+        console.log(this.filterKeys, 'filterKeys');
+        
+        this.filterAction();
+        console.log(this.items, 'items before');
+        this.cdr.detectChanges();
+      }
+    }
       },
       error: (err) => {
         this.messageService.add({
@@ -404,35 +406,172 @@ export class SearchResultsComponent {
     //   this.cdr.detectChanges();
     // } }
   }
-
-  showDialog(item?:any) {
-    if(item) {
-this.selectedItem = item;
+  checkAdminLogin() {
+    let postBody = {
+      email: sessionStorage.getItem('loggedInUserEmailId') || '',
     }
-    
-    this.addOrShowComments = !this.addOrShowComments;
+    this.http.post(apiUrl.isAdmin, postBody).subscribe((res: any) => {
+      if (res) {
+        this.isLoggedInAdmin = res?.data.admin;
+
+      }
+    }, err => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to verify Admin login', life: 2000 });
+      console.log(err.error);
+    })
+  }
+
+  getAllReactions() {
+    let postBody = {
+      email: sessionStorage.getItem('loggedInUserEmailId') || '',
+      uniqueIds: this.allResults.map((item: any) => item.metadatas?.item_handle)
+    }
+    this.http.post(apiUrl.getAllReaction, postBody).subscribe((res: any) => {
+      console.log(res, 'res reactions');
+      if (res) {
+
+        this.allResults.forEach(item => {
+          item.liked = false;
+          item.disliked = false;
+          item.comment = '';
+          item.likesCount = 0;
+          item.dislikesCount = 0;
+          res.data.forEach((reactionItem: any) => {
+            if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
+              if (reactionItem.reactionType == 'LIKE') {
+                item.liked = true;
+              }
+              if (reactionItem.reactionType == 'DISLIKE') {
+                item.disliked = true;
+              }
+
+            }
+          })
+        });
+        this.checkAdminLogin();
+
+        if (this.isLoggedInAdmin) {
+          this.http.post(apiUrl.getAdminSummary, postBody).subscribe((res: any) => {
+            console.log(res, 'admin summary');
+            if (res) {
+              this.allResults.forEach(item => {
+                res.data.forEach((reactionItem: any) => {
+
+                  if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
+                    item.likesCount = reactionItem.likes;
+                    item.dislikesCount = reactionItem.dislikes;
+
+
+                  }
+                })
+              })
+            }
+          })
+        }
+        this.applyFilters();
+      }
+    }, err => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch Reactions', life: 2000 });
+    });
+
+
+    console.log(this.allResults);
+  }
+  showDialog(item?: any) {
+    let postBody = {
+      emailId: sessionStorage.getItem('loggedInUserEmailId') || '',
+      uniqueId: item.metadatas?.item_handle
+    }
+    this.http.post(apiUrl.getAllComments, postBody).subscribe((res: any) => {
+      console.log(res, 'res comments');
+      if (res) {
+        this.commentsList = res.data;
+      }
+    }, err => {
+      console.log(err.error);
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch Comments', life: 2000 });
+
+    });
+    if (item) {
+      this.selectedItem = item;
+      this.selectedItem.comment = ''
+    }
+    this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
+
+
   }
   cancelComment() {
-    this.selectedItem.comment = ''
-    this.addOrShowComments = !this.addOrShowComments;
+    this.selectedItem.comment = '';
+    // if (this.isLoggedInAdmin) {
+    //   this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
+    // } else {
+    //   this.addOrShowCommentsUser = !this.addOrShowCommentsUser;
+    // }
+    this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
   }
-    submitComment() {
+  submitComment() {
     if (!this.selectedItem.comment.trim()) {
       this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Comments cannot be empty',
-          life: 2000
-        });
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Comments cannot be empty',
+        life: 2000
+      });
       return;
     }
 
     console.log("Comment submitted:", this.selectedItem.comment);
+    let postBody = {
+      uniqueId: this.selectedItem.metadatas?.['item_handle'],
+      email: sessionStorage.getItem('loggedInUserEmailId') || '',
+      comment: this.selectedItem.comment
+    }
+    this.loading = true;
+    this.http.post(apiUrl.addComments, postBody).subscribe(res => {
+      console.log(res);
+      this.loading = false;
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Comment Added succesfully', life: 2000 });
 
-    // TODO: send to backend
-    // this.commentService.addComment(this.commentText).subscribe(...)
+    }, err => {
+      console.log(err.error);
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to add Comments', life: 2000 });
 
-    // this.commentText = "";
-   this.addOrShowComments = !this.addOrShowComments;
+    });
+    this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
+
+  }
+
+  likeOrDislikeItem(item: any, action: string) {
+    if (action == 'like') {
+      item.disliked = false;
+    } else {
+      item.liked = false
+    }
+    let postBody = {
+      uniqueId: item.metadatas?.['item_handle'],
+      email: sessionStorage.getItem('loggedInUserEmailId') || '',
+      reaction: ''
+    }
+    if (item.liked) {
+      postBody.reaction = 'LIKE';
+    } else if (item.disliked) {
+      postBody.reaction = 'DISLIKE';
+    } else {
+      postBody.reaction = 'NONE';
+    }
+    this.loading = true;
+    this.http.post(apiUrl.likeOrDislikeUrl, postBody).subscribe(res => {
+      console.log(res);
+      this.loading = false;
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Reaction Added Successfully', life: 2000 });
+      this.getAllReactions();
+    }, err => {
+      console.log(err.error);
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to add Reaction', life: 2000 });
+      this.getAllReactions();
+    })
   }
 }

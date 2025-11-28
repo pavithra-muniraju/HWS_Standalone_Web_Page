@@ -50,8 +50,8 @@ export class ChatWindowComponent implements OnInit {
 
   ngOnInit() {
 
-    sessionStorage.setItem('query','hws');
-    sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
+    // sessionStorage.setItem('query','engine');
+    // sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
 
     this.searchQuery = sessionStorage.getItem('query');
     this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId');
@@ -77,7 +77,7 @@ export class ChatWindowComponent implements OnInit {
     sessionStorage.setItem('query', this.searchQuery);
     this.apiSubscription = this.http.post(apiUrl.searchUrl, {
       query: this.searchQuery,
-      max_results: 100
+      // max_results: 100
     }).subscribe((data: any) => {
       this.loading = false;
       this.buttonVisibility = true;
