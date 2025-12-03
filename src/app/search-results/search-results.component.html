@@ -60,7 +60,7 @@
       <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
 
-      <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download to excel</button>
+      <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download Report</button>
     </div>
     <div *ngIf="loading;" class="loader-pos">
       <span class="loader"></span>

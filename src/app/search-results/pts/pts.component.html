@@ -22,6 +22,8 @@
                 [disabled]="!(searchQuery.trim())">Search
             </button>
 
+               <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download Report</button>
+
         </div>
         <div class="searchResults">
             <div class="result-item" *ngFor="let item of filteredResults">

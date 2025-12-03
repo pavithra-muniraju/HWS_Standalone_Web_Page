@@ -296,4 +296,36 @@ export class PtsComponent {
       this.getAllReactions();
     })
   }
+
+    downloadReport() {
+    let postBody = {
+      email: sessionStorage.getItem('loggedInUserEmailId') || '',
+    }
+
+     this.http.post(apiUrl.reactionReport,postBody, { responseType: 'text' })
+      .toPromise()
+      .then((res:any) => {
+        console.log('Response received as text:', res);
+          const blob = new Blob([res], { type: 'text/csv;charset=utf-8;' });
+          const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Reactions_resport.csv'; 
+        link.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((err) => {
+        console.error('Error occurred while fetching CSV:', err);
+          if (err.error instanceof Blob) {
+          err.error.text().then((text:any) => {
+            console.error('Decoded error as text:', text);
+          });
+        } else {
+          console.error('Error details:', err);
+        }
+  
+        alert('Failed to download the Reactions list. Please try again.');
+      });
+
+  }
 }
