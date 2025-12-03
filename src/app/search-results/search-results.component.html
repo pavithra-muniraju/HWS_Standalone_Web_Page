@@ -60,6 +60,7 @@
       <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
 
+      <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download to excel</button>
     </div>
     <div *ngIf="loading;" class="loader-pos">
       <span class="loader"></span>
@@ -81,12 +82,12 @@
           <div class="actions">
             <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like"
               (click)="item.liked=!item.liked;likeOrDislikeItem(item, 'like')">
-            <span class="count" *ngIf="isLoggedInAdmin">{{item.likesCount}}</span>
+            <span class="count" *ngIf="item.likesCount > 0">{{item.likesCount}}</span>
             </i> 
              
             <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
               title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
-            <span class="count" *ngIf="isLoggedInAdmin">{{item.dislikesCount}}</span></i>
+            <span class="count" *ngIf="item.dislikesCount > 0">{{item.dislikesCount}}</span></i>
             <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment"
               (click)="showDialog(item)">
             </i>

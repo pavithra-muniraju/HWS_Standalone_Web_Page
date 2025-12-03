@@ -14,5 +14,6 @@ export const apiUrl = {
 
     getAdminSummary: 'https://rndhwsdev.heromotocorp.com/queryservice/api/items/reactions/summary',
     isAdmin: 'https://rndhwsdev.heromotocorp.com/queryservice/api/items/admin/check',
-   
+ 
+    reactionReport: 'https://rndhwsdev.heromotocorp.com/queryservice/api/items/download/reactionreport'
 }

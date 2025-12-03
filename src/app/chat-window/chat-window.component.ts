@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { apiUrl } from './../config/apiUrl';
 import { hintWords } from './../config/constants'; 4
@@ -42,8 +42,9 @@ export class ChatWindowComponent implements OnInit {
 
   kaList: any = [];
 
-  constructor(private http: HttpClient, private messageService: MessageService, private sharedDataService: SharedDataService,
-    // private route: ActivatedRoute
+  constructor(private http: HttpClient, private messageService: MessageService, 
+    private sharedDataService: SharedDataService, private cdr: ChangeDetectorRef
+    // private route: ActivatedRoute 
   ) {
     this.allowedEmailID = emailIDList
   }
@@ -82,7 +83,7 @@ export class ChatWindowComponent implements OnInit {
       this.loading = false;
       this.buttonVisibility = true;
       this.initialLoad = false;
-
+      this.cdr.detectChanges();
       console.log(this.loggedInUserDepartment)
       // filtering the data based on the dept
       if (this.loggedInUserDepartment == 'R&D'
@@ -108,7 +109,7 @@ export class ChatWindowComponent implements OnInit {
       this.searchResult = [...new Map(this.searchResult.map((item: any) =>
         [item[key], item])).values()];
       console.log(this.searchResult)
-
+        this.cdr.detectChanges();
     },
       err => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch the data. Please try after some time.', life: 2000 })
