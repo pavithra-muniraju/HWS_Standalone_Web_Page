@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MessageService } from 'primeng/api';
 import { apiUrl } from './../config/apiUrl';
 import { DynamicFilter } from '../config/dynamic-filter.constant';
+import { Data } from '../config/dummyData';
 
 interface FilterItem {
   display: string;
@@ -17,6 +18,8 @@ interface FilterItem {
   range?: number[];
   count?: number;
   searchedkey?: string;
+  showMore?: boolean;
+  showAll?: boolean;
 }
 interface ApiItem {
   issue_title: string;
@@ -29,6 +32,7 @@ interface ApiItem {
   comment: string;
   likesCount: number;
   dislikesCount: number;
+  commentsCount: number
 }
 @Component({
   selector: 'app-search-results',
@@ -66,6 +70,9 @@ export class SearchResultsComponent {
   selectedItem: any = {
     comment: ''
   };
+
+  fromDate:any = '';
+  toDate:any = ''
 
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
@@ -123,7 +130,9 @@ export class SearchResultsComponent {
           label,
           count,
           selected: false
-        }))
+        })),
+        showMore: false,
+        showAll: false
       };
     })
   }
@@ -245,6 +254,7 @@ export class SearchResultsComponent {
     if (this.apiSubscription) {
       this.apiSubscription.unsubscribe();
     }
+    // let data: any = Data
     this.apiSubscription = this.http.post(apiUrl.searchUrl, {
       query: searchQuery,
       // max_results: 100
@@ -372,8 +382,10 @@ export class SearchResultsComponent {
           ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
 
         }));
+        this.filterKeys.push({ display: 'Author', keyValue: 'author' });
+        this.filterKeys.push({ display: 'Publish Date', keyValue: 'publish_date', isRange: true });
         console.log(this.filterKeys, 'filterKeys');
-        
+
         this.filterAction();
         console.log(this.items, 'items before');
         this.cdr.detectChanges();
@@ -436,6 +448,7 @@ export class SearchResultsComponent {
           item.comment = '';
           item.likesCount = 0;
           item.dislikesCount = 0;
+          item.commentsCount = 0;
           res.data.forEach((reactionItem: any) => {
             if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
               if (reactionItem.reactionType == 'LIKE') {
@@ -460,9 +473,8 @@ export class SearchResultsComponent {
                   if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
                     item.likesCount = reactionItem.likes;
                     item.dislikesCount = reactionItem.dislikes;
-
-
-                  }
+                    item.commentsCount = reactionItem?.comments || 0;
+                  }                  
                 })
               })
             }
@@ -575,34 +587,40 @@ export class SearchResultsComponent {
     })
   }
 
+  getDateRange() {
+    
+  }
+
   downloadReport() {
     let postBody = {
       email: sessionStorage.getItem('loggedInUserEmailId') || '',
+      fromDate: this.fromDate || '',
+      toDate: this.toDate || ''
     }
 
-     this.http.post(apiUrl.reactionReport,postBody, { responseType: 'text' })
+    this.http.post(apiUrl.reactionReport, postBody, { responseType: 'text' })
       .toPromise()
-      .then((res:any) => {
+      .then((res: any) => {
         console.log('Response received as text:', res);
-          const blob = new Blob([res], { type: 'text/csv;charset=utf-8;' });
-          const url = window.URL.createObjectURL(blob);
+        const blob = new Blob([res], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Reactions_resport.csv'; 
+        link.download = 'Reactions_resport.csv';
         link.click();
         window.URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.error('Error occurred while fetching CSV:', err);
-          if (err.error instanceof Blob) {
-          err.error.text().then((text:any) => {
+        if (err.error instanceof Blob) {
+          err.error.text().then((text: any) => {
             console.error('Decoded error as text:', text);
           });
         } else {
           console.error('Error details:', err);
         }
-  
-        alert('Failed to download the Reactions list. Please try again.');
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to download the Reactions Report. Please try again.', life: 2000 });
+        // alert('Failed to download the Reactions list. Please try again.');
       });
 
   }

@@ -4,7 +4,8 @@
     <div class="filter-header">Filters</div>
     <div class="filter-groups">
       <div *ngFor="let group of filterGroups; let i = index" class="filter-group">
-        <h3>{{ group.display }}</h3>
+        <h3 (click)="group.showAll = !group.showAll" style="cursor: pointer;">{{ group.display }} <i style="float: right;" [ngClass]="group.showAll ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" ></i></h3> 
+        <div *ngIf="group.showAll">        
         <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
           <div class="slider-row">
             <p-slider [(ngModel)]="group.range" [min]="group.min!" [max]="group.max!" [range]="true"
@@ -25,11 +26,23 @@
 
         </div>
         <ng-template #checkboxFilters>
-          <div *ngFor="let filter of group.values" class="filter-item">
-            <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
-              [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
-            </p-checkbox>
+          <div *ngIf="group.values.length < 4">
+            <div *ngFor="let filter of group.values" class="filter-item">
+              <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
+                [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
+              </p-checkbox>
+            </div>
           </div>
+          <div *ngIf="group.values.length >= 4">
+            <div *ngFor="let filter of group.values; let j = index">
+              <div *ngIf="j < 4 || group.showMore" class="filter-item">
+                <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
+                  [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
+                </p-checkbox>
+              </div>
+            </div>
+          </div>
+
           <!-- {{items | json}} -->
           <div *ngFor="let item of items; let i = index">
 
@@ -39,7 +52,15 @@
             </p-autoComplete>
 
           </div>
+          <div *ngIf="group.values.length > 4" class="show-more-less" (click)="group.showMore = !group.showMore">
+            
+            <span [ngClass]="group.showMore ? 'show-more-less colapse' : 'show-more-less'">{{ group.showMore ? 'Colapse' : 'Show More' }}</span>
+      
+
+          </div>
         </ng-template>
+</div>
+
       </div>
     </div>
     <button *ngIf="filterGroups.length>0" class="reset-btn" pButton type="button" label="Reset Filters"
@@ -59,8 +80,8 @@
       <!-- -->
       <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
-
-      <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download Report</button>
+<!-- *ngIf="isLoggedInAdmin"  -->
+      <button class="search-btn pointer-cursor" (click)="downloadReport()">Download Report</button>
     </div>
     <div *ngIf="loading;" class="loader-pos">
       <span class="loader"></span>
@@ -84,12 +105,11 @@
               (click)="item.liked=!item.liked;likeOrDislikeItem(item, 'like')">
             <span class="count" *ngIf="item.likesCount > 0">{{item.likesCount}}</span>
             </i> 
-             
             <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
               title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
             <span class="count" *ngIf="item.dislikesCount > 0">{{item.dislikesCount}}</span></i>
-            <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment"
-              (click)="showDialog(item)">
+            <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)">
+              <span class="count" *ngIf="item.commentsCount > 0">{{item.commentsCount}}</span>
             </i>
           </div>
           

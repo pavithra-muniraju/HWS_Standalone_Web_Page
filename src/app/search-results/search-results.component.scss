@@ -106,6 +106,15 @@
   overflow-y: auto;
   padding-right: 0.5rem;
 }
+.filter-group {
+    padding: 2px;    
+    padding-bottom: 10px;
+}
+
+// .filter-group:hover {
+//     border-bottom: 1px solid #ddd;
+//     border-top: 1px solid #ddd;    
+// }
 
 .slider-values {
   padding-top: 10px;
@@ -275,4 +284,17 @@
 .count {
   margin: 3px;
   font-size: 12px;
+}
+.show-more-less {
+  cursor: pointer;
+  color: #007bff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 5px;
+  text-decoration: underline;
+}
+.colapse {
+  float: right !important;
 }

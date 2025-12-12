@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { emailIDList } from '../config/approvedEmailID';
 // import { ActivatedRoute, ParamMap } from '@angular/router';
 import { SharedDataService } from '../services/shared-data.service';
+import { Data } from '../config/dummyData';
 
 @Component({
   selector: 'app-chat-window',
@@ -69,6 +70,9 @@ export class ChatWindowComponent implements OnInit {
     }
 
   }
+  // getSearchResult() {
+  //   this.searchResult = Data
+  // }
   getSearchResult() {
     this.loading = true;
     this.searchResult = [];
