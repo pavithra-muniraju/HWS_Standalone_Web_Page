@@ -1,65 +1,69 @@
 <div class="search-layout">
   <!-- Left Panel (Filters) -->
   <div class="filter-panel">
+    <span class="filter-header">Home > {{selectedKnowledgeArea}}</span>
     <div class="filter-header">Filters</div>
     <div class="filter-groups">
       <div *ngFor="let group of filterGroups; let i = index" class="filter-group">
-        <h3 (click)="group.showAll = !group.showAll" style="cursor: pointer;">{{ group.display }} <i style="float: right;" [ngClass]="group.showAll ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'" ></i></h3> 
-        <div *ngIf="group.showAll">        
-        <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
-          <div class="slider-row">
-            <p-slider [(ngModel)]="group.range" [min]="group.min!" [max]="group.max!" [range]="true"
-              (onSlideEnd)="onFilterChange()" class="p-slider-type">
-            </p-slider>
-            <!-- reset publish date  -->
-            <!-- <i 
+        <h3 (click)="group.showAll = !group.showAll" style="cursor: pointer;">{{ group.display }} <i
+            style="float: right;" [ngClass]="group.showAll ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down'"></i>
+        </h3>
+        <div *ngIf="group.showAll">
+          <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
+            <div class="slider-row">
+              <p-slider [(ngModel)]="group.range" [min]="group.min!" [max]="group.max!" [range]="true"
+                (onSlideEnd)="onFilterChange()" class="p-slider-type">
+              </p-slider>
+              <!-- reset publish date  -->
+              <!-- <i 
               *ngIf="group.range?.[0] !== group.min || group.range?.[1] !== group.max"
               class="fa-regular fa-circle-xmark clear-icon"
               title="Reset"
               (click)="clearDateFilter(group)">
             </i> -->
-          </div>
-          <div class="slider-values">
-            {{ group.range?.[0] }} - {{ group.range?.[1] }}
-            <span *ngIf="group.isRange">({{ group.count || 0 }})</span>
-          </div>
-
-        </div>
-        <ng-template #checkboxFilters>
-          <div *ngIf="group.values.length < 4">
-            <div *ngFor="let filter of group.values" class="filter-item">
-              <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
-                [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
-              </p-checkbox>
             </div>
+            <div class="slider-values">
+              {{ group.range?.[0] }} - {{ group.range?.[1] }}
+              <span *ngIf="group.isRange">({{ group.count || 0 }})</span>
+            </div>
+
           </div>
-          <div *ngIf="group.values.length >= 4">
-            <div *ngFor="let filter of group.values; let j = index">
-              <div *ngIf="j < 4 || group.showMore" class="filter-item">
+          <ng-template #checkboxFilters>
+            <div *ngIf="group.values.length < 4">
+              <div *ngFor="let filter of group.values" class="filter-item">
                 <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
                   [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
                 </p-checkbox>
               </div>
             </div>
-          </div>
+            <div *ngIf="group.values.length >= 4">
+              <div *ngFor="let filter of group.values; let j = index">
+                <div *ngIf="j < 4 || group.showMore" class="filter-item">
+                  <p-checkbox [(ngModel)]="filter.selected" (onChange)="onFilterChange()"
+                    [label]="filter.label + ' (' + filter.count + ')'" [binary]="true">
+                  </p-checkbox>
+                </div>
+              </div>
+            </div>
 
-          <!-- {{items | json}} -->
-          <div *ngFor="let item of items; let i = index">
+            <!-- {{items | json}} -->
+            <div *ngFor="let item of items; let i = index">
 
-            <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]"
-              *ngIf="item.key == group.key" placeholder="Search" (completeMethod)="search(group.key, $event, i)"
-              field="label" (onSelect)="handleSelect($event, group.key)">
-            </p-autoComplete>
+              <p-autoComplete [(ngModel)]="item.value" [suggestions]="filteredSuggestions[i]"
+                *ngIf="item.key == group.key" placeholder="Search" (completeMethod)="search(group.key, $event, i)"
+                field="label" (onSelect)="handleSelect($event, group.key)">
+              </p-autoComplete>
 
-          </div>
-          <div *ngIf="group.values.length > 4" class="show-more-less" (click)="group.showMore = !group.showMore">
-            
-            <span [ngClass]="group.showMore ? 'show-more-less colapse' : 'show-more-less'">{{ group.showMore ? 'Colapse' : 'Show More' }}</span>
-      
+            </div>
+            <div *ngIf="group.values.length > 4" class="show-more-less" (click)="group.showMore = !group.showMore">
 
-          </div>
-        </ng-template>
-</div>
+              <span [ngClass]="group.showMore ? 'show-more-less colapse' : 'show-more-less'">{{ group.showMore ?
+                'Colapse' : 'Show More' }}</span>
+
+
+            </div>
+          </ng-template>
+        </div>
 
       </div>
     </div>
@@ -80,8 +84,8 @@
       <!-- -->
       <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
-<!-- *ngIf="isLoggedInAdmin"  -->
-      <button class="search-btn pointer-cursor" (click)="downloadReport()">Download Report</button>
+      <!-- -->
+      <button class="search-btn pointer-cursor"  *ngIf="isLoggedInAdmin"  (click)="getDateRange()">Download Report</button>
     </div>
     <div *ngIf="loading;" class="loader-pos">
       <span class="loader"></span>
@@ -103,16 +107,16 @@
           <div class="actions">
             <i [ngClass]="item.liked? 'fa-solid fa-thumbs-up' : 'fa-regular fa-thumbs-up'" class="icons" title="like"
               (click)="item.liked=!item.liked;likeOrDislikeItem(item, 'like')">
-            <span class="count" *ngIf="item.likesCount > 0">{{item.likesCount}}</span>
-            </i> 
+              <span class="count" *ngIf="item.likesCount > 0">{{item.likesCount}}</span>
+            </i>
             <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
               title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
-            <span class="count" *ngIf="item.dislikesCount > 0">{{item.dislikesCount}}</span></i>
-            <i [ngClass]="'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)">
+              <span class="count" *ngIf="item.dislikesCount > 0">{{item.dislikesCount}}</span></i>
+            <i [ngClass]="item.commentsCount > 0 ? 'fa-solid fa-comment' : 'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)">
               <span class="count" *ngIf="item.commentsCount > 0">{{item.commentsCount}}</span>
             </i>
           </div>
-          
+
           <!-- <p class="result-desc" [title]="item.metadatas['sub_department']">{{item.metadatas['sub_department'] }}</p> -->
           <button class="read-now-btn" (click)="navigateToFile(item.filepath)">Read Now</button>
         </div>
@@ -125,21 +129,27 @@
 </div>
 
 
-<p-dialog header="Add Comments" [(visible)]="addOrShowCommentsUser" [modal]="true" [closable]="true"
-  [style]="{ width: '400px' }">
+<p-dialog header="Select Date Range" [(visible)]="datePopup" [modal]="true" appendTo="body"   [closable]="true" [style]="{ width: '500px' }">
 
   <div class="p-fluid" style="padding-top: 10px;">
+    <div class="p-field ">
+      <label for="fromDate">From Date</label>
+      <p-calendar appendTo="body" [(ngModel)]="fromDate" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay" [maxDate]="toDate" />
+    </div>
     <div class="p-field">
-      <textarea id="comment" pInputTextarea rows="3" [(ngModel)]="selectedItem.comment"
-        placeholder="Write your comment...">
-      </textarea>
+      <label for="toDate">To Date</label>
+      <p-calendar appendTo="body" [(ngModel)]="toDate" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay" [minDate]="fromDate" />
     </div>
   </div>
 
+  <div>
+    <span class="message">** Leave Dates as blank if you wish to Download full report</span>
+  </div>
+
   <ng-template pTemplate="footer">
-    <button class="read-now-btn cancel" (click)="cancelComment();addOrShowCommentsUser=false">
+    <button class="read-now-btn cancel" (click)="datePopup=false">
       <i class="fas fa-times"></i> Cancel</button>
-    <button class="read-now-btn cancel submit" (click)="submitComment()">
+    <button class="read-now-btn cancel submit" (click)="downloadReport()">
       <i class="fa fa-check"></i> Submit</button>
 
   </ng-template>

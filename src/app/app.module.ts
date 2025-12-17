@@ -22,6 +22,8 @@ import {SliderModule} from 'primeng/slider';
 import { PtsComponent } from './search-results/pts/pts.component';
 import { AutoCompleteModule } from 'primeng/autocomplete';
 import { InputTextareaModule } from 'primeng/inputtextarea';
+import { CalendarModule } from "primeng/calendar";
+import { DatePipe } from '@angular/common';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,9 +49,10 @@ import { InputTextareaModule } from 'primeng/inputtextarea';
     ButtonModule,
     SliderModule,
     AutoCompleteModule,
-    InputTextareaModule
-  ],
-  providers: [MessageService],
+    InputTextareaModule,
+    CalendarModule
+],
+  providers: [MessageService, DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

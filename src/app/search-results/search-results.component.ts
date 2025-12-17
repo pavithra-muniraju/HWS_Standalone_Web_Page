@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { apiUrl } from './../config/apiUrl';
 import { DynamicFilter } from '../config/dynamic-filter.constant';
 import { Data } from '../config/dummyData';
+import { DatePipe } from '@angular/common';
 
 interface FilterItem {
   display: string;
@@ -71,14 +72,17 @@ export class SearchResultsComponent {
     comment: ''
   };
 
-  fromDate:any = '';
-  toDate:any = ''
+  datePopup = false;
+  fromDate: any = '';
+  toDate: any = ''
 
+  selectedKnowledgeArea = '';
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
-    private messageService: MessageService, private cdr: ChangeDetectorRef) { }
+    private messageService: MessageService, private cdr: ChangeDetectorRef, private datePipe: DatePipe) { }
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
+    this.selectedKnowledgeArea = group || '';
     this.getDynamicFilter(group);
     this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();
@@ -369,28 +373,28 @@ export class SearchResultsComponent {
     if (!group) return;
     this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
       next: (res) => {
-    // let res = { "npdprocesses": { "npdprocesses_title": "Document Title" } }
-    console.log(res, 'res');
-    this.dynamicFilter = res;
-    if (this.dynamicFilter) {
-      if (group != undefined) {
+        // let res = { "npdprocesses": { "npdprocesses_title": "Document Title" } }
+        console.log(res, 'res');
+        this.dynamicFilter = res;
+        if (this.dynamicFilter) {
+          if (group != undefined) {
 
-        const filtersForSelectedGroup = this.dynamicFilter[group] || '';
-        this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
-          display: displayValue,
-          keyValue: key.toLowerCase(),
-          ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
+            const filtersForSelectedGroup = this.dynamicFilter[group] || '';
+            this.filterKeys = Object.entries(filtersForSelectedGroup).map(([key, displayValue]) => ({
+              display: displayValue,
+              keyValue: key.toLowerCase(),
+              ...(key.toLowerCase().includes('date') ? { isRange: true } : {})
 
-        }));
-        this.filterKeys.push({ display: 'Author', keyValue: 'author' });
-        this.filterKeys.push({ display: 'Publish Date', keyValue: 'publish_date', isRange: true });
-        console.log(this.filterKeys, 'filterKeys');
+            }));
+            this.filterKeys.push({ display: 'Author', keyValue: 'author' });
+            this.filterKeys.push({ display: 'Publish Date', keyValue: 'publish_date' });
+            console.log(this.filterKeys, 'filterKeys');
 
-        this.filterAction();
-        console.log(this.items, 'items before');
-        this.cdr.detectChanges();
-      }
-    }
+            this.filterAction();
+            console.log(this.items, 'items before');
+            this.cdr.detectChanges();
+          }
+        }
       },
       error: (err) => {
         this.messageService.add({
@@ -464,21 +468,21 @@ export class SearchResultsComponent {
         this.checkAdminLogin();
 
         // if (this.isLoggedInAdmin) {
-          this.http.post(apiUrl.getAdminSummary, postBody).subscribe((res: any) => {
-            console.log(res, 'admin summary');
-            if (res) {
-              this.allResults.forEach(item => {
-                res.data.forEach((reactionItem: any) => {
+        this.http.post(apiUrl.getAdminSummary, postBody).subscribe((res: any) => {
+          console.log(res, 'admin summary');
+          if (res) {
+            this.allResults.forEach(item => {
+              res.data.forEach((reactionItem: any) => {
 
-                  if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
-                    item.likesCount = reactionItem.likes;
-                    item.dislikesCount = reactionItem.dislikes;
-                    item.commentsCount = reactionItem?.comments || 0;
-                  }                  
-                })
+                if (item.metadatas?.['item_handle'] === reactionItem.uniqueId) {
+                  item.likesCount = reactionItem.likes;
+                  item.dislikesCount = reactionItem.dislikes;
+                  item.commentsCount = reactionItem?.comments || 0;
+                }
               })
-            }
-          })
+            })
+          }
+        })
         // }
         this.applyFilters();
       }
@@ -544,12 +548,12 @@ export class SearchResultsComponent {
       console.log(res);
       this.loading = false;
       this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Comment Added succesfully', life: 2000 });
-
+      this.getAllReactions();
     }, err => {
       console.log(err.error);
       this.loading = false;
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to add Comments', life: 2000 });
-
+      this.getAllReactions();
     });
     this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
 
@@ -588,14 +592,16 @@ export class SearchResultsComponent {
   }
 
   getDateRange() {
-    
+    this.datePopup = true;
+    this.fromDate = '';
+    this.toDate = '';
   }
 
   downloadReport() {
     let postBody = {
       email: sessionStorage.getItem('loggedInUserEmailId') || '',
-      fromDate: this.fromDate || '',
-      toDate: this.toDate || ''
+      fromDate: this.datePipe.transform(this.fromDate, 'dd-MM-yyyy') || '',
+      toDate: this.datePipe.transform(this.toDate, 'dd-MM-yyyy') || '',
     }
 
     this.http.post(apiUrl.reactionReport, postBody, { responseType: 'text' })
@@ -622,6 +628,6 @@ export class SearchResultsComponent {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to download the Reactions Report. Please try again.', life: 2000 });
         // alert('Failed to download the Reactions list. Please try again.');
       });
-
+      this.datePopup = false;
   }
 }
