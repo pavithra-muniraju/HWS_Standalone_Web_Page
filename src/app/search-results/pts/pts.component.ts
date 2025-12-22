@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { apiUrl } from '../../config/apiUrl';
+import { DatePipe } from '@angular/common';
 
 
 interface ApiItem {
@@ -34,7 +35,7 @@ export class PtsComponent {
   searchQuery: any = '';
 
   allResults: ApiItem[] = [];
-   loading: boolean = false;
+  loading: boolean = false;
 
   isLoggedInAdmin = false;
   addOrShowCommentsUser = false;
@@ -45,14 +46,23 @@ export class PtsComponent {
     comment: ''
   };
 
+  datePopup = false;
+  fromDate: any = '';
+  toDate: any = ''
 
+  selectedKnowledgeArea = '';
+  selectedQuery = '';
 
-  constructor(private sharedDataService: SharedDataService, private http: HttpClient, private messageService: MessageService) { console.log('PtsComponent constructor called'); }
+  constructor(private sharedDataService: SharedDataService, private http: HttpClient,
+    private messageService: MessageService,
+    private datePipe: DatePipe,) { console.log('PtsComponent constructor called'); }
   ngOnInit() {
     console.log('yes')
-    const group = localStorage.getItem('searched_results')
+    const group = localStorage.getItem('searched_results');
+    this.selectedKnowledgeArea = group || '';
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
+    this.selectedQuery = searchQuery;
     if (searchedResult.length > 0) {
       this.filteredResults = searchedResult.filter(item => item.flag === group?.toLowerCase());
       console.log(this.filteredResults, 'all')
@@ -135,7 +145,7 @@ export class PtsComponent {
     }
   }
 
-    checkAdminLogin() {
+  checkAdminLogin() {
     let postBody = {
       email: sessionStorage.getItem('loggedInUserEmailId') || '',
     }
@@ -160,12 +170,12 @@ export class PtsComponent {
       if (res) {
 
         this.allResults.forEach(item => {
-           item.liked = false;
-            item.disliked = false;
-            item.comment = '';
-            item.likesCount = 0;
-            item.dislikesCount = 0;
-          res.data.forEach((reactionItem: any) => {           
+          item.liked = false;
+          item.disliked = false;
+          item.comment = '';
+          item.likesCount = 0;
+          item.dislikesCount = 0;
+          res.data.forEach((reactionItem: any) => {
             if (item.metadatas?.['object'] === reactionItem.uniqueId) {
               if (reactionItem.reactionType == 'LIKE') {
                 item.liked = true;
@@ -180,28 +190,28 @@ export class PtsComponent {
         this.checkAdminLogin();
 
         if (this.isLoggedInAdmin) {
-      this.http.post(apiUrl.getAdminSummary, postBody).subscribe((res: any) => {
-        console.log(res, 'admin summary');
-        if (res) {
-          this.allResults.forEach(item => {
-            res.data.forEach((reactionItem: any) => {
+          this.http.post(apiUrl.getAdminSummary, postBody).subscribe((res: any) => {
+            console.log(res, 'admin summary');
+            if (res) {
+              this.allResults.forEach(item => {
+                res.data.forEach((reactionItem: any) => {
 
-              if (item.metadatas?.['object'] === reactionItem.uniqueId) {
-                item.likesCount = reactionItem.likes;
-                item.dislikesCount = reactionItem.dislikes;
+                  if (item.metadatas?.['object'] === reactionItem.uniqueId) {
+                    item.likesCount = reactionItem.likes;
+                    item.dislikesCount = reactionItem.dislikes;
 
 
-              }
-            })
+                  }
+                })
+              })
+            }
           })
         }
-      })
-    }
       }
     }, err => {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch Reactions', life: 2000 });
     });
-    
+
 
     console.log(this.allResults);
   }
@@ -212,7 +222,7 @@ export class PtsComponent {
     }
     this.http.post(apiUrl.getAllComments, postBody).subscribe((res: any) => {
       console.log(res, 'res comments');
-      if(res) {
+      if (res) {
         this.commentsList = res.data;
       }
     }, err => {
@@ -230,7 +240,7 @@ export class PtsComponent {
 
   }
   cancelComment() {
-    this.selectedItem.comment = '';    
+    this.selectedItem.comment = '';
     this.addOrShowCommentsAdmin = !this.addOrShowCommentsAdmin;
   }
   submitComment() {
@@ -297,35 +307,43 @@ export class PtsComponent {
     })
   }
 
-    downloadReport() {
+  getDateRange() {
+    this.datePopup = true;
+    this.fromDate = '';
+    this.toDate = '';
+  }
+
+  downloadReport() {
     let postBody = {
       email: sessionStorage.getItem('loggedInUserEmailId') || '',
+      fromDate: this.datePipe.transform(this.fromDate, 'dd-MM-yyyy') || '',
+      toDate: this.datePipe.transform(this.toDate, 'dd-MM-yyyy') || '',
     }
 
-     this.http.post(apiUrl.reactionReport,postBody, { responseType: 'text' })
+    this.http.post(apiUrl.reactionReport, postBody, { responseType: 'text' })
       .toPromise()
-      .then((res:any) => {
+      .then((res: any) => {
         console.log('Response received as text:', res);
-          const blob = new Blob([res], { type: 'text/csv;charset=utf-8;' });
-          const url = window.URL.createObjectURL(blob);
+        const blob = new Blob([res], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Reactions_resport.csv'; 
+        link.download = 'Reactions_resport.csv';
         link.click();
         window.URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.error('Error occurred while fetching CSV:', err);
-          if (err.error instanceof Blob) {
-          err.error.text().then((text:any) => {
+        if (err.error instanceof Blob) {
+          err.error.text().then((text: any) => {
             console.error('Decoded error as text:', text);
           });
         } else {
           console.error('Error details:', err);
         }
-  
-        alert('Failed to download the Reactions list. Please try again.');
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to download the Reactions Report. Please try again.', life: 2000 });
+        // alert('Failed to download the Reactions list. Please try again.');
       });
-
+    this.datePopup = false;
   }
 }

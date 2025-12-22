@@ -1,6 +1,7 @@
 <div class="search-layout">
     <!-- Left Panel--->
     <div class="filter-panel">
+        <span class="filter-header">Home > {{selectedKnowledgeArea}} > {{selectedQuery}}</span>
         <div class="filter-header">Search Results</div>
         <div class="side-nav">
             <div class="nav-items"><i class="fas fa-chevron-right icon"></i>PTS</div>
@@ -21,8 +22,7 @@
             <button class="search-btn pointer-cursor" (click)="getSearchedResult()"
                 [disabled]="!(searchQuery.trim())">Search
             </button>
-
-               <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="downloadReport()">Download Report</button>
+            <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="getDateRange()">Download Report</button>
 
         </div>
         <div class="searchResults">
@@ -152,4 +152,33 @@
 
 </p-dialog>
 
+<p-dialog header="Select Date Range" [(visible)]="datePopup" [modal]="true" appendTo="body" [closable]="true"
+  [style]="{ width: '500px' }">
+
+  <div class="p-fluid" style="padding-top: 10px;">
+    <div class="p-field ">
+      <label for="fromDate">From Date</label>
+      <p-calendar appendTo="body" [(ngModel)]="fromDate" dateFormat="dd-mm-yy" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay"
+        [maxDate]="toDate" />
+    </div>
+    <div class="p-field">
+      <label for="toDate">To Date</label>
+      <p-calendar appendTo="body" [(ngModel)]="toDate" dateFormat="dd-mm-yy" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay"
+        [minDate]="fromDate" />
+    </div>
+  </div>
+
+  <div>
+    <span class="message">** Leave Dates as blank if you wish to Download full report</span>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button class="read-now-btn cancel" (click)="datePopup=false">
+      <i class="fas fa-times"></i> Cancel</button>
+    <button class="read-now-btn cancel submit" (click)="downloadReport()">
+      <i class="fa fa-check"></i> Submit</button>
+
+  </ng-template>
+
+</p-dialog>
 <p-toast></p-toast>

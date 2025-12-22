@@ -52,8 +52,8 @@ export class ChatWindowComponent implements OnInit {
 
   ngOnInit() {
 
-    // sessionStorage.setItem('query','engine');
-    // sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
+    sessionStorage.setItem('query','catcon');
+    sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
 
     this.searchQuery = sessionStorage.getItem('query');
     this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId');
