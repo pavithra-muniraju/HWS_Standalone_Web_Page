@@ -304,3 +304,25 @@
   margin: 10px;
   color: red;
 }
+
+.dateRange {
+  display: flex;
+}
+
+.todate {
+  // margin-right:10px ;
+  margin-left:10px ;
+}
+.fromdate {
+  margin-right:10px ;
+  // margin-left:10px ;
+}
+.delimeter {
+      align-items: center;
+    display: flex;
+    font-size: 20px;
+}
+.noResultsMsg {
+      font-size: 20px;
+    font-weight: bold;
+}

@@ -1,7 +1,7 @@
 <div class="search-layout">
   <!-- Left Panel (Filters) -->
   <div class="filter-panel">
-    <span class="filter-header">Home > {{selectedKnowledgeArea}}</span>
+    <span class="filter-header">Home > {{selectedKnowledgeArea}} > {{selectedQuery}}</span>
     <div class="filter-header">Filters</div>
     <div class="filter-groups">
       <div *ngFor="let group of filterGroups; let i = index" class="filter-group">
@@ -10,22 +10,30 @@
         </h3>
         <div *ngIf="group.showAll">
           <div *ngIf="group.isRange; else checkboxFilters" class="publish-date-slider">
-            <div class="slider-row">
+            <div class="p-fluid dateRange" >
+              <div class="fromdate">
+                <label>From Date</label>
+                <p-calendar [(ngModel)]="fromDateFilter" dateFormat="dd-mm-yy" (onSelect)="filterDataByDateRange()" appendTo="body" [maxDate]="toDateFilter">
+                </p-calendar>
+              </div>
+              <span class="delimeter">-</span>
+              <div class="todate">
+                <label>To Date</label>
+                <p-calendar [(ngModel)]="toDateFilter" dateFormat="dd-mm-yy" (onSelect)="filterDataByDateRange()" appendTo="body"  [minDate]="fromDateFilter">
+                </p-calendar>
+              </div>
+            </div>
+
+            <!-- <div class="slider-row">
               <p-slider [(ngModel)]="group.range" [min]="group.min!" [max]="group.max!" [range]="true"
                 (onSlideEnd)="onFilterChange()" class="p-slider-type">
               </p-slider>
-              <!-- reset publish date  -->
-              <!-- <i 
-              *ngIf="group.range?.[0] !== group.min || group.range?.[1] !== group.max"
-              class="fa-regular fa-circle-xmark clear-icon"
-              title="Reset"
-              (click)="clearDateFilter(group)">
-            </i> -->
+              
             </div>
             <div class="slider-values">
               {{ group.range?.[0] }} - {{ group.range?.[1] }}
               <span *ngIf="group.isRange">({{ group.count || 0 }})</span>
-            </div>
+            </div> -->
 
           </div>
           <ng-template #checkboxFilters>
@@ -85,7 +93,8 @@
       <button class="search-btn pointer-cursor" (click)="getSearchedResult()" [disabled]="!(searchQuery.trim())">Search
       </button>
       <!-- -->
-      <button class="search-btn pointer-cursor"  *ngIf="isLoggedInAdmin"  (click)="getDateRange()">Download Report</button>
+      <button class="search-btn pointer-cursor" *ngIf="isLoggedInAdmin" (click)="getDateRange()">Download
+        Report</button>
     </div>
     <div *ngIf="loading;" class="loader-pos">
       <span class="loader"></span>
@@ -112,7 +121,8 @@
             <i [ngClass]="item.disliked? 'fa-solid fa-thumbs-down' : 'fa-regular fa-thumbs-down'" class="icons"
               title="Dislike" (click)="item.disliked=!item.disliked;likeOrDislikeItem(item, 'disLike')">
               <span class="count" *ngIf="item.dislikesCount > 0">{{item.dislikesCount}}</span></i>
-            <i [ngClass]="item.commentsCount > 0 ? 'fa-solid fa-comment' : 'fa-regular fa-comment'" class="icons" title="comment" (click)="showDialog(item)">
+            <i [ngClass]="item.commentsCount > 0 ? 'fa-solid fa-comment' : 'fa-regular fa-comment'" class="icons"
+              title="comment" (click)="showDialog(item)">
               <span class="count" *ngIf="item.commentsCount > 0">{{item.commentsCount}}</span>
             </i>
           </div>
@@ -123,22 +133,29 @@
 
 
       </div>
+
+      <div *ngIf="filteredResults.length < 1" class="noResultsMsg">
+          No Results Found
+      </div>
     </div>
 
   </div>
 </div>
 
 
-<p-dialog header="Select Date Range" [(visible)]="datePopup" [modal]="true" appendTo="body"   [closable]="true" [style]="{ width: '500px' }">
+<p-dialog header="Select Date Range" [(visible)]="datePopup" [modal]="true" appendTo="body" [closable]="true"
+  [style]="{ width: '500px' }">
 
   <div class="p-fluid" style="padding-top: 10px;">
     <div class="p-field ">
       <label for="fromDate">From Date</label>
-      <p-calendar appendTo="body" [(ngModel)]="fromDate" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay" [maxDate]="toDate" />
+      <p-calendar appendTo="body" [(ngModel)]="fromDate" dateFormat="dd-mm-yy" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay"
+        [maxDate]="toDate" />
     </div>
     <div class="p-field">
       <label for="toDate">To Date</label>
-      <p-calendar appendTo="body" [(ngModel)]="toDate" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay" [minDate]="fromDate" />
+      <p-calendar appendTo="body" [(ngModel)]="toDate" dateFormat="dd-mm-yy" [showIcon]="true" [showOnFocus]="false" inputId="buttondisplay"
+        [minDate]="fromDate" />
     </div>
   </div>
 

@@ -76,10 +76,15 @@ export class SearchResultsComponent {
   fromDate: any = '';
   toDate: any = ''
 
+  fromDateFilter: any = '';
+  toDateFilter: any = '';
+
   selectedKnowledgeArea = '';
+  selectedQuery = '';
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
-    private messageService: MessageService, private cdr: ChangeDetectorRef, private datePipe: DatePipe) { }
+    private messageService: MessageService, private cdr: ChangeDetectorRef, private datePipe: DatePipe,){
+  }
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
     this.selectedKnowledgeArea = group || '';
@@ -87,6 +92,7 @@ export class SearchResultsComponent {
     this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();
     const searchQuery = this.sharedDataService.getQuery();
+    this.selectedQuery = searchQuery;
     this.checkAdminLogin();
     if (searchedResult.length > 0) {
       // this.getDynamicFilter(group);
@@ -191,6 +197,7 @@ export class SearchResultsComponent {
 
       }).length
     }
+    this.filterDataByDateRange();
     console.log(this.filteredResults)
   }
   onFilterChange(): void {
@@ -232,7 +239,8 @@ export class SearchResultsComponent {
       relativeTo: this.route,
       queryParams: {}
     });
-
+    this.fromDateFilter = '';
+    this.toDateFilter = ''
     this.applyFilters();
   }
 
@@ -373,7 +381,13 @@ export class SearchResultsComponent {
     if (!group) return;
     this.http.get(apiUrl.dynamicFilterUrl(group)).subscribe({
       next: (res) => {
-        // let res = { "npdprocesses": { "npdprocesses_title": "Document Title" } }
+  //       let res = {  "lessonslearned": {
+  //       "lessonslearned_issuesource": "Issue Source",
+  //       "lessonslearned_mlhcategory": "MLH Category",
+  //       "lessonslearned_projectcode": "Project Code",
+  //       "lessonslearned_reportedstage": "Reported Stage"
+  //   }
+  // }
         console.log(res, 'res');
         this.dynamicFilter = res;
         if (this.dynamicFilter) {
@@ -387,7 +401,7 @@ export class SearchResultsComponent {
 
             }));
             this.filterKeys.push({ display: 'Author', keyValue: 'author' });
-            this.filterKeys.push({ display: 'Publish Date', keyValue: 'publish_date' });
+            this.filterKeys.push({ display: 'Publish Date', keyValue: 'publish_date', isRange: true },  );
             console.log(this.filterKeys, 'filterKeys');
 
             this.filterAction();
@@ -581,7 +595,7 @@ export class SearchResultsComponent {
     this.http.post(apiUrl.likeOrDislikeUrl, postBody).subscribe(res => {
       console.log(res);
       this.loading = false;
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Reaction Added Successfully', life: 2000 });
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Reaction Saved Successfully', life: 2000 });
       this.getAllReactions();
     }, err => {
       console.log(err.error);
@@ -630,4 +644,23 @@ export class SearchResultsComponent {
       });
       this.datePopup = false;
   }
+
+filterDataByDateRange(): void {
+  // Ensure both dates are selected before filtering
+  if (this.fromDateFilter && this.toDateFilter) {
+    const start = new Date(this.fromDateFilter);
+    const end = new Date(this.toDateFilter);
+
+    // let data = []
+   this.filteredResults = this.allResults.filter(item => {
+      const itemDate = new Date(item.metadatas['publish_date']);
+      // Compare the item's date with the start and end dates
+      return itemDate >= start && itemDate <= end;
+    });
+    console.log(this.filteredResults);
+  } else {
+    // If one or both dates are cleared, show the original list
+    // this.filteredData = [...this.originalData];
+  }
+}
 }
