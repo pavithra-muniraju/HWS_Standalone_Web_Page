@@ -8,6 +8,7 @@ import { emailIDList } from '../config/approvedEmailID';
 // import { ActivatedRoute, ParamMap } from '@angular/router';
 import { SharedDataService } from '../services/shared-data.service';
 import { Data } from '../config/dummyData';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat-window',
@@ -44,7 +45,7 @@ export class ChatWindowComponent implements OnInit {
   kaList: any = [];
 
   constructor(private http: HttpClient, private messageService: MessageService, 
-    private sharedDataService: SharedDataService, private cdr: ChangeDetectorRef
+    private sharedDataService: SharedDataService, private cdr: ChangeDetectorRef,private router: Router, 
     // private route: ActivatedRoute 
   ) {
     this.allowedEmailID = emailIDList
@@ -208,6 +209,24 @@ export class ChatWindowComponent implements OnInit {
     console.log('window.location.href', window.location.href)
     var location = window.location.href.toString().replace("HWSext", "jspui");
     window.location.href = location;
+  }
+
+    getAllUniqueKnowledgeAreaItems(ka: any) {
+    console.log(ka)
+    this.sharedDataService.setData(this.searchResult);
+    if (ka.key === 'PTS') {
+      this.router.navigate(['pts']);
+      localStorage.setItem('searched_results', ka.key)
+    }
+    else {
+      localStorage.setItem('knowledge_areas', ka.key);
+      this.router.navigate(['/search-results'], {
+        queryParams: {
+          knowledge_areas: ka.key
+        }
+      });
+    }
+
   }
 
   receiveKAList(kaList: any) {

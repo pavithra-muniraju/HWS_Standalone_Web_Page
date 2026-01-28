@@ -496,9 +496,11 @@ export class SearchResultsComponent {
               })
             })
           }
+          this.applyFilters();
+          this.cdr.detectChanges();
         })
         // }
-        this.applyFilters();
+        
       }
     }, err => {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Unable to fetch Reactions', life: 2000 });
