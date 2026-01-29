@@ -87,7 +87,7 @@ export class SearchResultsComponent {
   }
   ngOnInit(): void {
     const group = this.route.snapshot.queryParamMap.get('knowledge_areas') || localStorage.getItem('knowledge_areas');
-    this.selectedKnowledgeArea = group || '';
+    this.selectedKnowledgeArea = localStorage.getItem('searched_results_DisplayName') || '';
     this.getDynamicFilter(group);
     this.cdr.detectChanges();
     const searchedResult = this.sharedDataService.getData();

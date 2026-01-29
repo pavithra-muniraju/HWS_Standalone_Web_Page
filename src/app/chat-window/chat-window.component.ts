@@ -80,7 +80,9 @@ export class ChatWindowComponent implements OnInit {
     if (this.apiSubscription) {
       this.apiSubscription.unsubscribe();
     }
+    console.log(this.searchQuery);
     sessionStorage.setItem('query', this.searchQuery);
+    this.sharedDataService.setQuery(this.searchQuery || '');
     this.apiSubscription = this.http.post(apiUrl.searchUrl, {
       query: this.searchQuery,
       // max_results: 100
@@ -214,12 +216,15 @@ export class ChatWindowComponent implements OnInit {
     getAllUniqueKnowledgeAreaItems(ka: any) {
     console.log(ka)
     this.sharedDataService.setData(this.searchResult);
+    this.sharedDataService.setQuery(this.searchQuery || '');
     if (ka.key === 'PTS') {
       this.router.navigate(['pts']);
       localStorage.setItem('searched_results', ka.key)
+      localStorage.setItem('searched_results_DisplayName', ka.displayName)
     }
     else {
       localStorage.setItem('knowledge_areas', ka.key);
+      localStorage.setItem('searched_results_DisplayName', ka.displayName)
       this.router.navigate(['/search-results'], {
         queryParams: {
           knowledge_areas: ka.key

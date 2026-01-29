@@ -2,7 +2,7 @@
     <div class="row">        
         <div *ngFor="let item of uniqueKnowledgeAreasWithCount;let i = index" >
             <div class="card" (click)="getAllUniqueKnowledgeAreaItems(item)">
-                <div class="cardHeader">{{item.key}}</div>
+                <div class="cardHeader">{{item.displayName}}</div>
                 <div class="cardBody">                            
                     {{item.value}}                    
                 </div>

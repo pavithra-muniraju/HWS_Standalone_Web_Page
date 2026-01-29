@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SharedDataService } from '../services/shared-data.service';
-
+import { MetaDataMapping } from '../config/metadataMapping';
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -10,6 +10,7 @@ import { SharedDataService } from '../services/shared-data.service';
 export class DashboardComponent {
   @Input() list: any = [];
   query: any = '';
+  metaDataMapping = MetaDataMapping;
 
   @Output() kaEvent = new EventEmitter<any>();
   uniqueKnowledgeAreasWithCount: any = [];
@@ -26,9 +27,11 @@ export class DashboardComponent {
     if (ka.key === 'PTS') {
       this.router.navigate(['pts']);
       localStorage.setItem('searched_results', ka.key)
+      localStorage.setItem('searched_results_DisplayName', ka.displayName)
     }
     else {
       localStorage.setItem('knowledge_areas', ka.key);
+      localStorage.setItem('searched_results_DisplayName', ka.displayName)
       this.router.navigate(['/search-results'], {
         queryParams: {
           knowledge_areas: ka.key
@@ -47,13 +50,18 @@ export class DashboardComponent {
     uniqueKnowledgeAreasKeys.forEach((element: any) => {
       let count = this.list.filter((obj: any) => obj.metadatas.knowledge_areas == element).length;
       if (element != undefined) {
-        this.uniqueKnowledgeAreasWithCount.push({ key: element, value: count })
+        this.metaDataMapping.forEach(metaData => {
+          if (metaData.key == element) {
+            this.uniqueKnowledgeAreasWithCount.push({ key: element, value: count, displayName: metaData.displayName })
+          }
+        })
+
       }
 
     });
     let ptsCount = this.list.filter((obj: any) => obj.flag == 'pts').length;
     if (ptsCount > 0) {
-      this.uniqueKnowledgeAreasWithCount.push({ key: 'PTS', value: ptsCount })
+      this.uniqueKnowledgeAreasWithCount.push({ key: 'PTS', value: ptsCount, displayName: 'PTS' })
     }
 
     this.updateList();

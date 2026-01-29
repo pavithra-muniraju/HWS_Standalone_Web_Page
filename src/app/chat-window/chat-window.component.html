@@ -4,7 +4,7 @@
         <div class="sideNav">
             <div class="kaNavItem"><b>Knowledge Areas</b></div>
             <div *ngFor="let ka of kaList">
-                <div class="navItems" (click)="getAllUniqueKnowledgeAreaItems(ka)"><i class="fas fa-chevron-right icon"></i>{{ka.key}}</div>
+                <div class="navItems" (click)="getAllUniqueKnowledgeAreaItems(ka)"><i class="fas fa-chevron-right icon"></i>{{ka.displayName}}</div>
             </div>
             <!-- <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>Lesson Learned</div>
             <div class="navItems" (click)="navigateToHWS()"><i class="fas fa-chevron-right icon"></i>Design Guidelines</div>
