@@ -81,6 +81,48 @@ export class SearchResultsComponent {
 
   selectedKnowledgeArea = '';
   selectedQuery = '';
+
+  private dedupeByDocumentType(items: any[]): any[] {
+    const uniqueResults: any[] = [];
+    const seenHwsFilepaths = new Set<string>();
+    const seenPtsIssueTitles = new Set<string>();
+
+    items.forEach((item: any) => {
+      if (item?.flag === 'hws') {
+        const filepath = String(item?.filepath || '');
+        if (filepath && seenHwsFilepaths.has(filepath)) {
+          return;
+        }
+        if (filepath) {
+          seenHwsFilepaths.add(filepath);
+        }
+        uniqueResults.push(item);
+        return;
+      }
+
+      if (item?.flag === 'pts') {
+        const rawIssueTitle = item?.metadatas?.['#sym:issue_title']
+          || item?.metadatas?.issue_title
+          || item?.issue_title
+          || '';
+        const issueTitle = String(rawIssueTitle).trim().replace(/\s+/g, ' ').toLowerCase();
+        if (issueTitle && seenPtsIssueTitles.has(issueTitle)) {
+          return;
+        }
+        if (issueTitle) {
+          seenPtsIssueTitles.add(issueTitle);
+        }
+        uniqueResults.push(item);
+        return;
+      }
+
+      uniqueResults.push(item);
+    });
+    console.log(uniqueResults)
+
+    return uniqueResults;
+  }
+
   constructor(private route: ActivatedRoute, private router: Router,
     private sharedDataService: SharedDataService, private http: HttpClient,
     private messageService: MessageService, private cdr: ChangeDetectorRef, private datePipe: DatePipe,){
@@ -96,7 +138,9 @@ export class SearchResultsComponent {
     this.checkAdminLogin();
     if (searchedResult.length > 0) {
       // this.getDynamicFilter(group);
-      this.allResults = searchedResult.filter(item => item.metadatas.knowledge_areas === group);
+      this.allResults = this.dedupeByDocumentType(
+        searchedResult.filter(item => item.metadatas.knowledge_areas === group)
+      );
       this.getAllReactions();
       this.cdr.detectChanges();
     } else {
@@ -274,10 +318,9 @@ export class SearchResultsComponent {
       this.loading = false;
       this.sharedDataService.setQuery(searchQuery);
       this.sharedDataService.setData(data);
-      this.allResults = data.filter((item: any) => item.metadatas.knowledge_areas === group);
-      const key = 'filepath';
-      this.allResults = [...new Map(this.allResults.map((item: any) =>
-        [item[key], item])).values()];
+      this.allResults = this.dedupeByDocumentType(
+        data.filter((item: any) => item.metadatas.knowledge_areas === group)
+      );
       this.getAllReactions();
       console.log(this.allResults)
 

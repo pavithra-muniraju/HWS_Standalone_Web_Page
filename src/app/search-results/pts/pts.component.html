@@ -54,14 +54,14 @@
         </div>
     </div>
 </div>
-<p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
+<!-- <p-dialog header="PTS WebPage" [(visible)]="visibleSummary" [breakpoints]="{ '960px': '75vw' }"
     [style]="{ width: '68%' }" [draggable]="false" [resizable]="false" [modal]="true"
     [closable]="summaryLoading ? false : true">
 
     <div class="info-container">
         <div class="info-row">
             <div class="info-label">PTS NO</div>
-            <div class="info-value">{{ metaData?.metadatas?.['object'] }}</div>
+          <div class="info-value">{{ metaData?.metadatas?.['pts_number'] }}</div>
         </div>
         <div class="info-row">
             <div class="info-label">Model Code</div>
@@ -118,6 +118,33 @@
     </div>
 
 
+</p-dialog> -->
+
+<p-dialog
+  header="PTS WebPage"
+  [(visible)]="visibleSummary"
+  [breakpoints]="{ '960px': '75vw' }"
+  [style]="{ width: '68%' }"
+  [contentStyle]="{ 'max-height': '70vh', 'overflow-y': 'auto' }"
+  [draggable]="false"
+  [resizable]="false"
+  [modal]="true"
+  [closable]="summaryLoading ? false : true"
+>
+  <div class="info-container">
+    <div class="info-row" *ngFor="let field of metadataFields">
+      <div class="info-label">{{ field.label }}</div>
+      <div class="info-value">
+        <ng-container *ngIf="isDateField(field.key); else normalValue">
+          {{ formatDate(metaData?.metadatas?.[field.key]) }}
+        </ng-container>
+
+        <ng-template #normalValue>
+          {{ metaData?.metadatas?.[field.key] || "-" }}
+        </ng-template>
+      </div>
+    </div>
+  </div>
 </p-dialog>
 
 <p-dialog header="Comments Section" [(visible)]="addOrShowCommentsAdmin" [modal]="true" [closable]="true"

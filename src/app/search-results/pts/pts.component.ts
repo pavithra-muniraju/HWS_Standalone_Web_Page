@@ -52,7 +52,7 @@ export class PtsComponent {
 
   selectedKnowledgeArea = '';
   selectedQuery = '';
-
+metadataFields: { key: string; label: string }[] = [];
   constructor(private sharedDataService: SharedDataService, private http: HttpClient,
     private messageService: MessageService,
     private datePipe: DatePipe,) { console.log('PtsComponent constructor called'); }
@@ -77,8 +77,39 @@ export class PtsComponent {
     console.log(item, 'item')
     this.metaData = item;
     this.visibleSummary = true;
+    this.buildMetadataFields();
   }
 
+  buildMetadataFields() {
+  if (!this.metaData?.metadatas) return;
+
+  this.metadataFields = Object.keys(this.metaData.metadatas).map(key => ({
+    key,
+    label: this.toTitleCase(key)
+  }));
+}
+
+toTitleCase(text: string): string {
+  return text
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+isDateField(key: string): boolean {
+  return key.toLowerCase().includes('date');
+}
+
+formatDate(value: string): string {
+  if (!value) return '-';
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return '-';
+  }
+
+  return new Intl.DateTimeFormat('en-GB').format(date); // 23/01/2019
+}
   getSearchResult(searchQuery: string, group: string | null) {
     this.searchResult = [];
     if (this.apiSubscription) {

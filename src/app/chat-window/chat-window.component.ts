@@ -57,7 +57,7 @@ export class ChatWindowComponent implements OnInit {
     // sessionStorage.setItem('loggedInUserEmailId','manish.srivastava@heromotocorp.com')
 
     this.searchQuery = sessionStorage.getItem('query');
-    this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId');
+    this.getEmailIDFromHWS = sessionStorage.getItem('loggedInUserEmailId') || sessionStorage.getItem('email');
     //console.log(this.searchQuery)
     this.sharedDataService.setQuery(this.searchQuery || '');
 
@@ -87,6 +87,7 @@ export class ChatWindowComponent implements OnInit {
       query: this.searchQuery,
       // max_results: 100
     }).subscribe((data: any) => {
+    // let data = Data
       this.loading = false;
       this.buttonVisibility = true;
       this.initialLoad = false;
@@ -112,9 +113,44 @@ export class ChatWindowComponent implements OnInit {
         this.searchResult = data.sort((a: any, b: any) => b.similarity_score - a.similarity_score);
       }
 
-      const key = 'filepath';
-      this.searchResult = [...new Map(this.searchResult.map((item: any) =>
-        [item[key], item])).values()];
+      const uniqueResults: any[] = [];
+      const seenHwsFilepaths = new Set<string>();
+      const seenPtsIssueTitles = new Set<string>();
+
+      this.searchResult.forEach((item: any) => {
+        if (item?.flag === 'hws') {
+          const filepath = String(item?.filepath || '');
+          if (filepath && seenHwsFilepaths.has(filepath)) {
+            return;
+          }
+          if (filepath) {
+            seenHwsFilepaths.add(filepath);
+          }
+          uniqueResults.push(item);
+          return;
+        }
+
+        if (item?.flag === 'pts') {
+          const rawIssueTitle = item?.metadatas?.['#sym:issue_title']
+            || item?.metadatas?.issue_title
+            || item?.issue_title
+            || '';
+          const issueTitle = String(rawIssueTitle).trim().replace(/\s+/g, ' ').toLowerCase();
+
+          if (issueTitle && seenPtsIssueTitles.has(issueTitle)) {
+            return;
+          }
+          if (issueTitle) {
+            seenPtsIssueTitles.add(issueTitle);
+          }
+          uniqueResults.push(item);
+          return;
+        }
+
+        uniqueResults.push(item);
+      });
+
+      this.searchResult = uniqueResults;
       console.log(this.searchResult)
         this.cdr.detectChanges();
     },

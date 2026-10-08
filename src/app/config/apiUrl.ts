@@ -4,7 +4,7 @@ const apiEndPoint = environment.baseUrl.includes("rnd")?"rndhwsdev":"hws";
 export const apiUrl = {
     
     searchUrl: environment.baseUrl.includes("rnd")?"https://uat-apim.heromotocorp.com/hws/query":'https://prod-apim.heromotocorp.com/server/query',
-
+        
     dynamicFilterUrl:(query: string) =>`https://${apiEndPoint}.heromotocorp.com/queryservice/knowledgearea-filters?knowledge-area=`+query,
     summarizeUrl: API_URL+'summarize',
     apiUrl: API_URL,
